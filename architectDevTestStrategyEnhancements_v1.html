@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Postman → Automation · Full briefing</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e1014;
+  --panel: #161922;
+  --panel-soft: #1d2130;
+  --line: #2a2f3e;
+  --ink: #ecebe6;
+  --ink-dim: #9b9a92;
+  --ink-faint: #5e5d57;
+  --accent: #ff7a3d;
+  --accent-soft: rgba(255, 122, 61, 0.12);
+  --present: #4fb3a8;
+  --present-soft: rgba(79, 179, 168, 0.15);
+  --past: #4fb3a8;
+  --past-soft: rgba(79, 179, 168, 0.15);
+  --future: #a78bfa;
+  --future-soft: rgba(167, 139, 250, 0.15);
+  --warn: #f5c66e;
+  --pass: #6ec77b;
+  --pass-soft: rgba(110, 199, 123, 0.15);
+  --fail: #e35d5d;
+  --fail-soft: rgba(227, 93, 93, 0.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Background atmosphere */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 10%, rgba(255, 122, 61, 0.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 90%, rgba(167, 139, 250, 0.05) 0%, transparent 45%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top bar */
+.topbar {
+  padding: 18px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  background: rgba(14, 16, 20, 0.6);
+  backdrop-filter: blur(8px);
+}
+.brand {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+.brand strong { color: var(--accent); font-weight: 700; }
+.act {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+}
+.act b { color: var(--present); font-weight: 700; }
+.counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--ink-dim);
+}
+.counter b { color: var(--ink); font-weight: 700; }
+
+/* Slide container */
+.stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 56px;
+  position: relative;
+  overflow: hidden;
+}
+.slide {
+  width: 100%;
+  max-width: 1140px;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 16px;
+}
+.eyebrow .num { color: var(--accent); font-weight: 700; }
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 800;
+  font-size: clamp(36px, 5.2vw, 60px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin-bottom: 20px;
+}
+h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: clamp(28px, 3.6vw, 42px);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  margin-bottom: 16px;
+}
+.lead {
+  font-size: 17px;
+  color: var(--ink-dim);
+  max-width: 64ch;
+  line-height: 1.55;
+  margin-bottom: 28px;
+}
+
+/* Title slide */
+.title-slide .meta {
+  margin-top: 36px;
+  display: flex;
+  gap: 36px;
+  flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-dim);
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.title-slide .meta strong { color: var(--ink); display: block; margin-top: 4px; font-weight: 500; }
+
+/* Section divider slide */
+.divider-slide { text-align: left; }
+.divider-slide .act-mark {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.divider-slide.part1 .act-mark { color: var(--present); }
+.divider-slide.part2 .act-mark { color: var(--accent); }
+.divider-slide .rule {
+  width: 64px; height: 3px; margin-top: 26px; border-radius: 2px;
+}
+.divider-slide.part1 .rule { background: var(--present); }
+.divider-slide.part2 .rule { background: var(--accent); }
+
+/* Workflow diagram (3 cols) */
+.workflow { display: grid; gap: 14px; margin: 28px 0; }
+.workflow.cols-3 { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; }
+.step {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 18px 20px;
+  position: relative;
+}
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.15em;
+  color: var(--ink-faint); margin-bottom: 6px;
+}
+.step-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.step-desc { font-size: 13px; color: var(--ink-dim); line-height: 1.4; }
+.step.present { border-color: rgba(79, 179, 168, 0.3); background: var(--present-soft); }
+.step.present .step-num { color: var(--present); }
+.step.future { border-color: rgba(167, 139, 250, 0.3); background: var(--future-soft); }
+.step.future .step-num { color: var(--future); }
+.arrow {
+  color: var(--ink-faint);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; text-align: center; user-select: none;
+}
+
+/* Fork→merge mini-flow (slide for PR process) */
+.flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+.flow-step {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 14px;
+  position: relative;
+}
+.flow-step.fork { border-left: 3px solid var(--present); }
+.flow-step.source { border-left: 3px solid var(--accent); }
+.flow-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.12em; margin-bottom: 5px;
+}
+.flow-step.fork .flow-num { color: var(--present); }
+.flow-step.source .flow-num { color: var(--accent); }
+.flow-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.flow-desc { font-size: 12px; color: var(--ink-dim); line-height: 1.4; }
+.flow-legend {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  margin-top: 18px; font-size: 12.5px; color: var(--ink-dim);
+}
+.flow-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.lg-dot { width: 10px; height: 10px; border-radius: 3px; }
+.lg-dot.fork { background: var(--present); }
+.lg-dot.source { background: var(--accent); }
+
+/* Full 8-step expandable workflow */
+.steps8 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 6px;
+  max-height: 54vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.steps8::-webkit-scrollbar { width: 8px; }
+.steps8::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+.xstep {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 13px 16px;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s;
+  position: relative;
+  align-self: start;
+}
+.xstep:hover { background: var(--panel-soft); transform: translateY(-2px); }
+.xstep.fork { border-left-color: var(--present); }
+.xstep.source { border-left-color: var(--accent); }
+.xstep-head { display: flex; align-items: baseline; gap: 9px; }
+.xnum { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink-faint); min-width: 16px; }
+.xstep.fork .xnum { color: var(--present); }
+.xstep.source .xnum { color: var(--accent); }
+.xtitle { font-size: 15px; font-weight: 600; }
+.xteaser { font-size: 12.5px; color: var(--ink-dim); margin-top: 4px; padding-left: 25px; }
+.xchev { position: absolute; top: 14px; right: 14px; font-size: 12px; color: var(--ink-faint); transition: transform 0.2s; }
+.xstep.open .xchev { transform: rotate(90deg); }
+.xdetail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.28s ease; padding-left: 25px; }
+.xstep.open .xdetail { grid-template-rows: 1fr; margin-top: 10px; }
+.xdetail-inner { overflow: hidden; }
+.xdetail p { font-size: 13px; color: var(--ink); margin-bottom: 8px; line-height: 1.5; }
+.xdetail p:last-child { margin-bottom: 2px; }
+.xdetail strong { font-weight: 600; color: #fff; }
+.xdetail code { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; color: #cdd6e4; }
+.xflag { display: block; border-left: 2px solid var(--warn); background: rgba(245,198,110,0.10); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 12.5px; color: var(--ink); margin-top: 4px; line-height: 1.5; }
+.xflag.danger { border-left-color: var(--fail); background: rgba(227,93,93,0.10); }
+.steps8-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 4px 0 12px; flex-wrap: wrap; }
+.steps8-legend { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: var(--ink-dim); }
+.steps8-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.steps8-bar button {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-dim); background: transparent; border: 1px solid var(--line); border-radius: 6px;
+  padding: 6px 13px; cursor: pointer; transition: border-color 0.18s, color 0.18s; white-space: nowrap;
+}
+.steps8-bar button:hover { border-color: var(--ink-dim); color: var(--ink); }
+
+/* Service restructure (before / after) */
+.restructure { display: grid; grid-template-columns: 1fr auto 1fr; gap: 22px; align-items: center; margin-top: 16px; }
+.rs-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; }
+.rs-panel.after { border-color: rgba(79,179,168,0.35); background: var(--present-soft); position: relative; }
+.rs-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 14px; display: flex; align-items: center; gap: 9px; }
+.rs-panel.after .rs-label { color: var(--present); }
+.rs-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bg); background: var(--present); padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+.rs-tree { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.75; }
+.rs-tree div { white-space: nowrap; }
+.rs-tree .svc { color: var(--present); font-weight: 600; }
+.rs-tree .grp { color: var(--ink); }
+.rs-tree .dim { color: var(--ink-dim); }
+.rs-tree .strike { color: var(--ink-faint); text-decoration: line-through; }
+.rs-arrow { font-family: 'JetBrains Mono', monospace; font-size: 28px; color: var(--present); text-align: center; }
+
+/* Objectives overview */
+.objectives { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.obj { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--line); border-radius: 8px; padding: 14px 18px; display: flex; gap: 14px; align-items: flex-start; transition: border-color 0.2s ease, transform 0.2s ease; }
+.obj:hover { transform: translateY(-2px); }
+.obj.f { border-left-color: var(--present); }
+.obj.a { border-left-color: var(--accent); }
+.obj.f:hover { border-color: rgba(79,179,168,0.4); border-left-color: var(--present); }
+.obj.a:hover { border-color: var(--accent); }
+.obj-idx { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--ink-faint); min-width: 18px; padding-top: 2px; }
+.obj.f .obj-idx { color: var(--present); }
+.obj.a .obj-idx { color: var(--accent); }
+.obj-body { flex: 1; }
+.obj-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 3px; }
+.obj-title { font-size: 15px; font-weight: 600; line-height: 1.25; }
+.obj-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
+.obj.f .obj-tag { color: var(--present); background: var(--present-soft); }
+.obj.a .obj-tag { color: var(--accent); background: var(--accent-soft); }
+.obj-desc { font-size: 12.5px; color: var(--ink-dim); line-height: 1.45; }
+.obj-desc .pick { color: var(--ink-faint); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+/* Bridge slide */
+.bridge {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: 28px; align-items: center; margin-top: 20px;
+}
+.bridge-box { padding: 26px 24px; border-radius: 6px; text-align: left; }
+.bridge-box.now { background: var(--present-soft); border: 1px solid rgba(79, 179, 168, 0.3); }
+.bridge-box.next { background: var(--future-soft); border: 1px solid rgba(167, 139, 250, 0.3); }
+.bridge-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px;
+}
+.bridge-box.now .bridge-label { color: var(--present); }
+.bridge-box.next .bridge-label { color: var(--future); }
+.bridge-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; margin-bottom: 10px; line-height: 1.2; }
+.bridge-desc { font-size: 14.5px; color: var(--ink-dim); line-height: 1.5; }
+.bridge-arrow { font-family: 'JetBrains Mono', monospace; font-size: 32px; color: var(--accent); text-align: center; }
+.bridge-arrow-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-top: 6px;
+}
+
+/* Pipeline diagram */
+.pipeline {
+  display: grid; grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 8px; align-items: stretch; margin: 20px 0 8px;
+}
+.node {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 18px 16px; text-align: center; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; min-height: 130px; position: relative;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.node:hover { transform: translateY(-3px); border-color: var(--accent); }
+.node-icon { font-size: 28px; margin-bottom: 8px; line-height: 1; }
+.node-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.14em; color: var(--ink-faint); text-transform: uppercase; margin-bottom: 6px;
+}
+.node-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.25; }
+.node-sub { font-size: 12px; color: var(--ink-dim); line-height: 1.35; }
+.node.postman { border-color: rgba(255, 107, 60, 0.4); }
+.node.github { border-color: rgba(167, 139, 250, 0.4); }
+.node.actions { border-color: rgba(79, 179, 168, 0.4); }
+.pipeline .arrow {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; position: relative;
+}
+.arrow-label {
+  position: absolute; top: -18px; font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-faint); white-space: nowrap;
+}
+
+/* Caption row */
+.caption-row {
+  margin-top: 26px; padding: 16px 20px;
+  background: var(--accent-soft); border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0; font-size: 14px; color: var(--ink);
+}
+.caption-row strong { color: var(--accent); font-weight: 600; }
+
+/* Suite cards */
+.suites { display: grid; grid-template-columns: 1fr; gap: 18px; margin: 16px auto 0; max-width: 600px; }
+.suite-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 22px 24px; position: relative; overflow: hidden;
+}
+.suite-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent); }
+.suite-name {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500;
+  color: var(--ink); margin-bottom: 4px; word-break: break-all;
+}
+.suite-purpose { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; margin-bottom: 12px; line-height: 1.25; }
+.suite-schedule {
+  display: flex; align-items: baseline; gap: 10px; padding: 10px 14px;
+  background: var(--bg); border-radius: 4px; border: 1px solid var(--line); margin-bottom: 12px;
+}
+.suite-cron { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 500; }
+.suite-time { font-size: 12px; color: var(--ink-dim); }
+.suite-meta { font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+
+/* Run timeline */
+.timeline { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.timeline-item {
+  display: grid; grid-template-columns: 60px 1fr; gap: 16px; padding: 12px 16px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  align-items: center; transition: border-color 0.2s ease;
+}
+.timeline-item:hover { border-color: var(--accent); }
+.timeline-marker { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: 0.06em; }
+.timeline-body strong { font-size: 14.5px; font-weight: 600; display: block; margin-bottom: 2px; }
+.timeline-body span { font-size: 13px; color: var(--ink-dim); }
+
+/* Reusable pattern */
+.pattern { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
+.pat-step { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 14px; position: relative; }
+.pat-num { font-family: 'Fraunces', serif; font-style: italic; font-size: 28px; font-weight: 400; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+.pat-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; line-height: 1.25; }
+.pat-desc { font-size: 12px; color: var(--ink-dim); line-height: 1.5; }
+.pat-desc code { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; }
+.pattern-callout {
+  margin-top: 22px; padding: 14px 20px; background: var(--past-soft);
+  border-left: 3px solid var(--past); border-radius: 0 6px 6px 0; font-size: 13.5px; color: var(--ink);
+}
+.pattern-callout strong { color: var(--past); font-weight: 600; }
+
+/* Asks */
+.asks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+.ask-card { padding: 20px 22px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; border-left: 3px solid var(--accent); }
+.ask-num { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--accent); margin-bottom: 8px; }
+.ask-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.ask-desc { font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+
+/* Controls */
+.controls {
+  padding: 16px 40px; display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid var(--line); background: rgba(14, 16, 20, 0.6); backdrop-filter: blur(8px);
+}
+.progress { display: flex; gap: 6px; flex: 1; max-width: 360px; }
+.dot { flex: 1; height: 3px; background: var(--line); border-radius: 1.5px; cursor: pointer; transition: background 0.3s; }
+.dot.active { background: var(--accent); }
+.dot.visited { background: var(--ink-faint); }
+.nav { display: flex; gap: 8px; }
+.nav button {
+  background: var(--panel); border: 1px solid var(--line); color: var(--ink);
+  padding: 8px 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: all 0.2s;
+}
+.nav button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+.hint { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--ink-faint); text-transform: uppercase; }
+.hint kbd { background: var(--panel); border: 1px solid var(--line); padding: 2px 6px; border-radius: 3px; margin: 0 2px; font-family: inherit; font-size: 10px; }
+
+@media (max-width: 900px) {
+  .stage { padding: 20px 18px; }
+  .topbar, .controls { padding: 14px 20px; }
+  .workflow.cols-3 { grid-template-columns: 1fr; }
+  .workflow.cols-3 .arrow { transform: rotate(90deg); padding: 4px 0; }
+  .pipeline { grid-template-columns: 1fr; gap: 4px; }
+  .pipeline .arrow { transform: rotate(90deg); padding: 4px 0; }
+  .arrow-label { display: none; }
+  .bridge, .suites, .asks, .pattern, .flow, .steps8, .restructure, .objectives { grid-template-columns: 1fr; }
+  .bridge-arrow, .rs-arrow { transform: rotate(90deg); }
+  .act { display: none; }
+  .hint { display: none; }
+  h1 { font-size: 32px; } h2 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">Briefing · <strong>Postman → Automation</strong></div>
+    <div class="act" id="actLabel">Part 1 · Foundation</div>
+    <div class="counter"><b id="curr">1</b> / <span id="total">15</span></div>
+  </div>
+
+  <div class="stage">
+
+    <!-- 1 · TITLE -->
+    <div class="slide active title-slide" data-slide="1" data-act="The full story">
+      <div class="eyebrow"><span class="num">01</span> · Briefing</div>
+      <h1>From shared Postman<br>to <em>automated regression</em></h1>
+      <p class="lead">The whole arc in one walkthrough: where our Postman testing started, the process we agreed on for changing shared collections, and the working pipeline that now runs regression against UAT automatically.</p>
+      <div class="meta">
+        <div>Prepared by<strong>Stephanie Haecker</strong></div>
+        <div>For<strong>Dev + QA team meeting</strong></div>
+        <div>Duration<strong>~8 minutes</strong></div>
+      </div>
+    </div>
+
+    <!-- 2 · OBJECTIVES -->
+    <div class="slide" data-slide="2" data-act="The objectives">
+      <div class="eyebrow"><span class="num">02</span> · Objectives, at a glance</div>
+      <h2>What this set out to do</h2>
+      <p class="lead">Six objectives across two phases: a cleaner shared workspace and a safe way to change it first, then the integration and automation that build on top.</p>
+      <div class="objectives">
+        <div class="obj f">
+          <div class="obj-idx">01</div>
+          <div class="obj-body">
+            <div class="obj-top"><span class="obj-title">Re-organize the shared workspace by service</span><span class="obj-tag">Foundation</span></div>
+            <div class="obj-desc">A service → feature hierarchy replaces campaign-named, flat collections.</div>
+          </div>
+        </div>
+        <div class="obj f">
+          <div class="obj-idx">02</div>
+          <div class="obj-body">
+            <div class="obj-top"><span class="obj-title">A safe PR process for shared collections</span><span class="obj-tag">Foundation</span></div>
+            <div class="obj-desc">Fork &rarr; PR &rarr; merge, with Postman as the source of truth.</div>
+          </div>
+        </div>
+        <div class="obj f">
+          <div class="obj-idx">03</div>
+          <div class="obj-body">
+            <div class="obj-top"><span class="obj-title">Connect Claude to Postman via MCP</span><span class="obj-tag">Foundation</span></div>
+            <div class="obj-desc">AI as a working partner for analysis, change planning, and validation.</div>
+          </div>
+        </div>
+        <div class="obj a">
+          <div class="obj-idx">04</div>
+          <div class="obj-body">
+            <div class="obj-top"><span class="obj-title">Postman &rarr; GitHub integration</span><span class="obj-tag">Automation</span></div>
+            <div class="obj-desc">Collections sync to the repo as JSON &mdash; backup and a runnable source.</div>
+          </div>
+        </div>
+        <div class="obj a">
+          <div class="obj-idx">05</div>
+          <div class="obj-body">
+            <div class="obj-top"><span class="obj-title">A foundation for faster automation runs</span><span class="obj-tag">Automation</span></div>
+            <div class="obj-desc">On-demand regression on tap, no schedule wait. <span class="pick">Runner: GitHub Actions (my pick)</span></div>
+          </div>
+        </div>
+        <div class="obj a">
+          <div class="obj-idx">06</div>
+          <div class="obj-body">
+            <div class="obj-top"><span class="obj-title">Scheduled automation runs</span><span class="obj-tag">Automation</span></div>
+            <div class="obj-desc">Daily regression against UAT, hands-off. <span class="pick">Runner: GitHub Actions (my pick)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · PART 1 DIVIDER -->
+    <div class="slide divider-slide part1" data-slide="3" data-act="Part 1 · Foundation">
+      <div class="act-mark">Part 1 · Foundation</div>
+      <h1>First, a shared way<br>to <em>change things safely</em></h1>
+      <p class="lead">Before any automation, the team needed one mental model: how the shared workspace works, and how to edit a collection without breaking what depends on it.</p>
+      <div class="rule"></div>
+    </div>
+
+    <!-- 4 · ORGANIZING BY SERVICE -->
+    <div class="slide" data-slide="4" data-act="Part 1 · Foundation">
+      <div class="eyebrow"><span class="num">03</span> · The shape we're moving toward</div>
+      <h2>Organizing by service, not campaign</h2>
+      <p class="lead">The shared workspace is being reorganized so every collection follows one predictable shape: service → payment method → scenario. An in-progress map that dev and QA can both navigate the same way — that consistency <em>is</em> the shared mental model.</p>
+      <div class="restructure">
+        <div class="rs-panel before">
+          <div class="rs-label">Was · campaign-named &amp; flat</div>
+          <div class="rs-tree">
+            <div><span class="strike">mpAutomation_osi_UAT_CC_(main)</span></div>
+            <div><span class="strike">mpAutomation_achOSI_ASYNC_UAT</span></div>
+            <div><span class="strike">mpAutomation_achOSI_SYNC_UAT</span></div>
+            <div><span class="dim">+ duplicate UAT_URL environments</span></div>
+          </div>
+        </div>
+        <div class="rs-arrow">→</div>
+        <div class="rs-panel after">
+          <div class="rs-label">In progress · service-aligned <span class="rs-badge">underway</span></div>
+          <div class="rs-tree">
+            <div><span class="svc">osiPaymentsService/</span></div>
+            <div>&nbsp;&nbsp;<span class="grp">CC/</span> <span class="dim">— Authorize · Capture</span></div>
+            <div>&nbsp;&nbsp;<span class="grp">ACH/</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">Asynchronous/</span></div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">Synchronous/</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="caption-row">
+        <strong>Why it matters:</strong> predictable names, no duplication, and an obvious home for new scenarios. Same shape every time, so nobody has to relearn the workspace. The pattern will extend to the other services next.
+      </div>
+    </div>
+
+    <!-- 5 · THE PR PROCESS -->
+    <div class="slide" data-slide="5" data-act="Part 1 · Foundation">
+      <div class="eyebrow"><span class="num">04</span> · How we change shared collections</div>
+      <h2>Fork → change → PR → merge</h2>
+      <p class="lead">The source collection backs the nightly regression run. Editing it directly risks breaking a scheduled run mid-change. Forking isolates work until it's reviewed and intentionally merged — a Git-style flow for Postman.</p>
+      <div class="flow">
+        <div class="flow-step fork">
+          <div class="flow-num">01 · FORK</div>
+          <div class="flow-title">Fork the source</div>
+          <div class="flow-desc">A linked copy in your workspace. Changes don't touch the source.</div>
+        </div>
+        <div class="flow-step fork">
+          <div class="flow-num">02 · EDIT &amp; PULL</div>
+          <div class="flow-title">Change in the fork</div>
+          <div class="flow-desc">One purpose per fork. Pull from source to catch conflicts early.</div>
+        </div>
+        <div class="flow-step fork">
+          <div class="flow-num">03 · PR &amp; REVIEW</div>
+          <div class="flow-title">Open a PR, review the diff</div>
+          <div class="flow-desc">Reviewers read the diff. Fork owner can't self-approve.</div>
+        </div>
+        <div class="flow-step source">
+          <div class="flow-num">04 · MERGE</div>
+          <div class="flow-title">Merge to source</div>
+          <div class="flow-desc">UID stays stable, so automation keeps pointing at the right collection.</div>
+        </div>
+      </div>
+      <div class="flow-legend">
+        <span><span class="lg-dot fork"></span> Steps 1–3 happen in your fork — safe, reversible</span>
+        <span><span class="lg-dot source"></span> Step 4 touches the live source</span>
+      </div>
+    </div>
+
+    <!-- 6 · FULL 8-STEP WORKFLOW (interactive) -->
+    <div class="slide" data-slide="6" data-act="Part 1 · Foundation">
+      <div class="eyebrow"><span class="num">05</span> · The fork → merge workflow, in full</div>
+      <h2>All eight steps — tap any to expand</h2>
+      <div class="steps8-bar">
+        <div class="steps8-legend">
+          <span><span class="lg-dot fork"></span> 1–5 in your fork (safe, reversible)</span>
+          <span><span class="lg-dot source"></span> 6–8 touch the live source</span>
+        </div>
+        <button id="toggleAll8">Expand all</button>
+      </div>
+      <div class="steps8" id="steps8">
+
+        <div class="xstep fork">
+          <span class="xchev">&#9656;</span>
+          <div class="xstep-head"><span class="xnum">1</span><span class="xtitle">Fork</span></div>
+          <div class="xteaser">Linked copy in your workspace</div>
+          <div class="xdetail"><div class="xdetail-inner">
+            <p>Locate the source collection in the sidebar, open its context menu (the <code>&ctdot;</code> next to its name) and select <strong>Create a fork</strong>.</p>
+            <p>Label it <code>&lt;owner&gt;/&lt;purpose&gt;</code>, e.g. <code>shaecker/regroup-ach-folders</code>, and pick the workspace to create it in.</p>
+            <p>You now have an independent, linked copy. The fork remembers its source — that's what makes the later PR and merge possible. Changes in the fork do <strong>not</strong> affect the source.</p>
+          </div></div>
+        </div>
+
+        <div class="xstep fork">
+          <span class="xchev">&#9656;</span>
+          <div class="xstep-head"><span class="xnum">2</span><span class="xtitle">Edit</span></div>
+          <div class="xteaser">Work in the fork only</div>
+          <div class="xdetail"><div class="xdetail-inner">
+            <p>Make all changes inside the fork: adding/renaming/reorganizing requests and folders, editing pre-request scripts, updating assertions, restructuring into a <code>Service/PaymentMethod/Scenario</code> hierarchy.</p>
+            <p>Keep one logical purpose per fork — smaller PRs are easier to review. Use service-aligned naming over campaign-specific naming, and reference environment variables rather than hard-coding secrets.</p>
+            <span class="xflag">Document expected failures inline. Where a test asserts on a failure response (e.g. the synchronous-ACH E411 case) that is the documented correct behavior, leave a comment so the next reader doesn't treat it as a bug.</span>
+          </div></div>
+        </div>
+
+        <div class="xstep fork">
+          <span class="xchev">&#9656;</span>
+          <div class="xstep-head"><span class="xnum">3</span><span class="xtitle">Pull</span></div>
+          <div class="xteaser">Catch conflicts early</div>
+          <div class="xdetail"><div class="xdetail-inner">
+            <p>If others merge into the source while your fork is open, your fork can fall behind. Before opening a PR, open the fork's context menu and select <strong>Pull changes</strong>.</p>
+            <p>Review and resolve any conflicts Postman reports. Resolving conflicts now — before the PR — keeps the eventual merge clean.</p>
+          </div></div>
+        </div>
+
+        <div class="xstep fork">
+          <span class="xchev">&#9656;</span>
+          <div class="xstep-head"><span class="xnum">4</span><span class="xtitle">Open PR</span></div>
+          <div class="xteaser">Fork to source, name dependents</div>
+          <div class="xdetail"><div class="xdetail-inner">
+            <p>From the fork's context menu select <strong>Create pull request</strong>. This generates a diff of your fork against the source — that diff is what reviewers read.</p>
+            <p><strong>Title:</strong> short and scannable. <strong>Description:</strong> what changed and why; flag renames, deletions, assertion changes, and expected-failure cases. Name the dependent automation (the nightly UAT run) so reviewers know the blast radius.</p>
+            <p><strong>Reviewers:</strong> add per the approval policy. <strong>Destination:</strong> confirm it targets the correct source collection.</p>
+            <span class="xflag">Reviewer-access gotcha: reviewers must be able to access the source collection to see the PR. If they can't, the fix is workspace access — not re-sending the PR.</span>
+          </div></div>
+        </div>
+
+        <div class="xstep fork">
+          <span class="xchev">&#9656;</span>
+          <div class="xstep-head"><span class="xnum">5</span><span class="xtitle">Review</span></div>
+          <div class="xteaser">Read the diff, then approve</div>
+          <div class="xdetail"><div class="xdetail-inner">
+            <p>Reviewers read the diff (not just the description): verify service-aligned naming, confirm shared config lives at the folder level, sanity-check assertion changes — especially documented expected-failure cases.</p>
+            <p>Confirm nothing automation depends on is being removed or renamed in a breaking way. Renames are safe when automation references the collection by UID; deletions and structural moves still warrant a check.</p>
+            <p>The fork owner addresses comments by continuing to edit the fork and pushing updates to the same PR. <strong>The fork owner cannot self-approve.</strong></p>
+          </div></div>
+        </div>
+
+        <div class="xstep source">
+          <span class="xchev">&#9656;</span>
+          <div class="xstep-head"><span class="xnum">6</span><span class="xtitle">Merge</span></div>
+          <div class="xteaser">UID stays stable — automation safe</div>
+          <div class="xdetail"><div class="xdetail-inner">
+            <p>Once approved, select <strong>Merge</strong> from the PR. Postman applies the fork's changes to the source collection.</p>
+            <p>The source UID is unchanged, so automation referencing it by UID (<code>25387245-…-97618878a6f7</code>) continues to point at the right collection.</p>
+          </div></div>
+        </div>
+
+        <div class="xstep source">
+          <span class="xchev">&#9656;</span>
+          <div class="xstep-head"><span class="xnum">7</span><span class="xtitle">Verify</span></div>
+          <div class="xteaser">Confirm repo synced (~5 min), then run regression</div>
+          <div class="xdetail"><div class="xdetail-inner">
+            <p><strong>Confirm the GitHub repo has synced the merged source changes first.</strong> The Postman → GitHub sync isn't instant — it averages about 5 minutes. Running against stale JSON tests the old structure, not your change.</p>
+            <p><strong>Trigger the regression manually from the GitHub Action</strong> rather than waiting for the scheduled run: open the workflow in the repo's Actions tab and use <strong>Run workflow</strong>.</p>
+            <p>Confirm the run passes, the coverage baseline is preserved (same scenarios execute, expected-failure cases still assert), and any linked monitor is still green.</p>
+            <span class="xflag">Verifying with a real run — not just visual inspection of the structure — is what proves the suite still executes in its new shape.</span>
+          </div></div>
+        </div>
+
+        <div class="xstep source">
+          <span class="xchev">&#9656;</span>
+          <div class="xstep-head"><span class="xnum">8</span><span class="xtitle">Clean up</span></div>
+          <div class="xteaser">Delete fork, dupes, empty collections</div>
+          <div class="xdetail"><div class="xdetail-inner">
+            <p><strong>Delete the fork</strong> once merged and verified, so stale forks don't accumulate (an old fork can quietly undo recent work).</p>
+            <p><strong>Delete now-empty source collections</strong> your change consolidated or replaced — this finishes the consolidation. <strong>Remove duplicate environments</strong> left behind, so a run can't silently pick the wrong one.</p>
+            <span class="xflag danger">Deletions are irreversible and the highest-risk step. Policy requires two approvals (QA reviewer + maintainer/lead) with explicit confirmation of what depends on the deleted item. Deleting the emptied old collections is safe because automation references osiPaymentsService by UID — but verify the UID before deleting.</span>
+          </div></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 7 · GOTCHAS / CONVENTIONS -->
+    <div class="slide" data-slide="7" data-act="Part 1 · Foundation">
+      <div class="eyebrow"><span class="num">06</span> · The conventions that keep it safe</div>
+      <h2>A few rules carry most of the weight</h2>
+      <p class="lead">Captured in the reference doc in the repo so nobody has to re-derive them.</p>
+      <div class="workflow cols-3">
+        <div class="step present">
+          <div class="step-num">RULE · UID</div>
+          <div class="step-title">Reference by UID, not name</div>
+          <div class="step-desc">Renames don't break runs when automation points at the UID.</div>
+        </div>
+        <div class="arrow">·</div>
+        <div class="step present">
+          <div class="step-num">RULE · INTENT</div>
+          <div class="step-title">Document expected failures inline</div>
+          <div class="step-desc">An E411 that's the documented correct response gets a comment, so it isn't "fixed."</div>
+        </div>
+        <div class="arrow">·</div>
+        <div class="step present">
+          <div class="step-num">RULE · VERIFY</div>
+          <div class="step-title">Always verify with a real run</div>
+          <div class="step-desc">Trigger the pipeline manually after merge, then clean up forks &amp; dupes.</div>
+        </div>
+      </div>
+      <div class="caption-row">
+        <strong>Full guide:</strong> the fork → merge → verify → clean-up workflow, the approval policy, and a rollback procedure live in <code>mpAutomation/docs</code>.
+      </div>
+    </div>
+
+    <!-- 8 · BRIDGE -->
+    <div class="slide" data-slide="8" data-act="The handoff">
+      <div class="eyebrow"><span class="num">07</span> · Why this order matters</div>
+      <h2>Process first, then automation</h2>
+      <p class="lead">Automating a workflow no one understands just multiplies confusion. Document the manual flow first; automation lands cleanly on top of it.</p>
+      <div class="bridge">
+        <div class="bridge-box now">
+          <div class="bridge-label">Part 1 · Foundation</div>
+          <div class="bridge-title">Shared understanding of the manual workflow</div>
+          <div class="bridge-desc">Reference doc + clean PR process means dev + QA share one mental model of how changes flow through Postman.</div>
+        </div>
+        <div>
+          <div class="bridge-arrow">→</div>
+          <div class="bridge-arrow-label">Then</div>
+        </div>
+        <div class="bridge-box next">
+          <div class="bridge-label">Part 2 · Automation</div>
+          <div class="bridge-title">Same workflow, run automatically</div>
+          <div class="bridge-desc">GitHub Actions executes the same collections on a schedule. The process you already know — just faster and tracked.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 · PART 2 DIVIDER -->
+    <div class="slide divider-slide part2" data-slide="9" data-act="Part 2 · Automation">
+      <div class="act-mark">Part 2 · Automation</div>
+      <h1>The pipeline is running.<br><em>Here's what it does.</em></h1>
+      <p class="lead">The osiPaymentsService collection syncs to GitHub, and a scheduled GitHub Actions run fires daily against UAT. A working pipeline, end to end — built on the process from Part 1.</p>
+      <div class="rule"></div>
+    </div>
+
+    <!-- 10 · WHERE WE STARTED (manual baseline, opens Part 2) -->
+    <div class="slide" data-slide="10" data-act="Part 2 · Automation">
+      <div class="eyebrow"><span class="num">08</span> · The baseline we're replacing</div>
+      <h2>Manual testing after every deploy</h2>
+      <p class="lead">Before automation, regression coverage ran through a person. Postman was the tool; the team was the trigger, the runner, and the reporter. This is the loop the pipeline takes off our plates.</p>
+      <div class="workflow cols-3">
+        <div class="step present">
+          <div class="step-num">01 · DEPLOY</div>
+          <div class="step-title">Tech Support deploys</div>
+          <div class="step-desc">Manual deployment process</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="step present">
+          <div class="step-num">02 · RUN</div>
+          <div class="step-title">QA runs tests in Postman</div>
+          <div class="step-desc">Manually executes the collection</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="step present">
+          <div class="step-num">03 · REPORT</div>
+          <div class="step-title">QA records results</div>
+          <div class="step-desc">Notes, tickets, follow-ups</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11 · PIPELINE -->
+    <div class="slide" data-slide="11" data-act="Part 2 · Automation">
+      <div class="eyebrow"><span class="num">09</span> · The pipeline today</div>
+      <h2>Three moving parts. Each one's earning its keep.</h2>
+      <p class="lead">A change in Postman flows all the way through to a scheduled run against UAT — no manual steps in the middle.</p>
+      <div class="pipeline">
+        <div class="node postman">
+          <div class="node-icon">📮</div>
+          <div class="node-label">01 · Source</div>
+          <div class="node-title">Postman workspace</div>
+          <div class="node-sub">Collection lives here, edited via fork → PR</div>
+        </div>
+        <div class="arrow"><span class="arrow-label">backup</span>→</div>
+        <div class="node github">
+          <div class="node-icon">🗃️</div>
+          <div class="node-label">02 · Storage</div>
+          <div class="node-title">GitHub repo</div>
+          <div class="node-sub">JSON synced ~5 min after Postman save</div>
+        </div>
+        <div class="arrow"><span class="arrow-label">trigger</span>→</div>
+        <div class="node actions">
+          <div class="node-icon">⚙️</div>
+          <div class="node-label">03 · Runner</div>
+          <div class="node-title">GitHub Actions</div>
+          <div class="node-sub">Runs on schedule against UAT, JUnit results saved</div>
+        </div>
+      </div>
+      <div class="caption-row">
+        <strong>What's new:</strong> the right half of this diagram. Postman → GitHub was already working. GitHub Actions running the collection on a schedule is the new piece.
+      </div>
+    </div>
+
+    <!-- 12 · WHAT RUNS DAILY -->
+    <div class="slide" data-slide="12" data-act="Part 2 · Automation">
+      <div class="eyebrow"><span class="num">10</span> · What runs daily</div>
+      <h2>One regression, scheduled daily</h2>
+      <p class="lead">Single workflow file, single schedule, single source of truth. Built deliberately small — extending the pattern is easy once the first one is solid.</p>
+      <div class="suites">
+        <div class="suite-card">
+          <div class="suite-name">regression_osiPaymentsService_UAT.yml</div>
+          <div class="suite-purpose">Payment regression against UAT</div>
+          <div class="suite-schedule">
+            <span class="suite-cron">10 14 * * *</span>
+            <span class="suite-time">9:10 AM CDT (drifts to 8:10 in CST)</span>
+          </div>
+          <div class="suite-meta">CC + ACH (Sync &amp; Async) coverage. ~200 requests, 3-second delay between each. JUnit results uploaded as an artifact every run.</div>
+        </div>
+      </div>
+      <div class="caption-row">
+        <strong>Also runs on demand:</strong> anyone can hit "Run workflow" in the GitHub Actions UI for an ad-hoc run after a deploy or before a release — no schedule wait.
+      </div>
+    </div>
+
+    <!-- 13 · INSIDE A RUN -->
+    <div class="slide" data-slide="13" data-act="Part 2 · Automation">
+      <div class="eyebrow"><span class="num">11</span> · Inside a single run</div>
+      <h2>What happens in those ~10 minutes</h2>
+      <p class="lead">Same steps every time, fully logged. Anyone with repo access can read the run.</p>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-marker">T+0:00</div>
+          <div class="timeline-body">
+            <strong>Schedule fires</strong>
+            <span>Cron triggers the workflow. GitHub spins up a fresh Ubuntu runner.</span>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker">T+0:10</div>
+          <div class="timeline-body">
+            <strong>Postman CLI installs &amp; authenticates</strong>
+            <span>Uses POSTMAN_API_KEY secret. Pulls latest collection + environment from Postman cloud.</span>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker">T+0:30</div>
+          <div class="timeline-body">
+            <strong>Collection runs against UAT</strong>
+            <span>3-second delay between requests — kind to UAT, easier to read logs. Each request &amp; assertion logged.</span>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker">T+9:00</div>
+          <div class="timeline-body">
+            <strong>JUnit results written + uploaded as artifact</strong>
+            <span>Downloadable from the run page. Plays nicely with any reporter that reads JUnit XML, and gives anyone with repo access a record of the run.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14 · REUSABLE PATTERN -->
+    <div class="slide" data-slide="14" data-act="Part 2 · Automation">
+      <div class="eyebrow"><span class="num">12</span> · Doing this for another suite</div>
+      <h2>The pattern, condensed</h2>
+      <p class="lead">Every new suite follows the same four phases. The full checklist is in the repo docs — this is the headline.</p>
+      <div class="pattern">
+        <div class="pat-step">
+          <div class="pat-num">01</div>
+          <div class="pat-title">Back up the collection</div>
+          <div class="pat-desc">Postman Integrations → "Backup a collection" → same repo, different filename.</div>
+        </div>
+        <div class="pat-step">
+          <div class="pat-num">02</div>
+          <div class="pat-title">Add a workflow file</div>
+          <div class="pat-desc">Copy a working <code>.yml</code>, change name + collection ID + environment ID + artifact name.</div>
+        </div>
+        <div class="pat-step">
+          <div class="pat-num">03</div>
+          <div class="pat-title">Test manually first</div>
+          <div class="pat-desc"><code>workflow_dispatch</code> only at first. Confirm the run succeeds before adding any schedule.</div>
+        </div>
+        <div class="pat-step">
+          <div class="pat-num">04</div>
+          <div class="pat-title">Add the schedule</div>
+          <div class="pat-desc">Stagger ≥30 min from existing schedules. UTC math is the trap — use the conversion table.</div>
+        </div>
+      </div>
+      <div class="pattern-callout">
+        <strong>Total time per new suite, once you know the drill:</strong> about 30 minutes. Most of that is verifying the manual run before turning the schedule on.
+      </div>
+    </div>
+
+    <!-- 15 · ASKS -->
+    <div class="slide" data-slide="15" data-act="What I need from you">
+      <div class="eyebrow"><span class="num">13</span> · What I need from you</div>
+      <h2>Three small things</h2>
+      <p class="lead">Nothing blocking. All async. Each one shapes what this becomes for the team.</p>
+      <div class="asks">
+        <div class="ask-card">
+          <div class="ask-num">Ask one</div>
+          <div class="ask-title">How should we know when it fails?</div>
+          <div class="ask-desc">Right now nothing pings us — we'd have to check the Actions tab. What would actually get read? Open to ideas on channel, format, frequency.</div>
+        </div>
+        <div class="ask-card">
+          <div class="ask-num">Ask two</div>
+          <div class="ask-title">Suites to add next</div>
+          <div class="ask-desc">Which collections would you most want running daily? Pattern's reusable — I just need to know which suites are highest value.</div>
+        </div>
+        <div class="ask-card">
+          <div class="ask-num">Ask three</div>
+          <div class="ask-title">Feedback on the doc</div>
+          <div class="ask-desc">The reference + reusable checklist is in the repo. Anything missing? Anything that took longer than it should have? That feedback shapes v2.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="controls">
+    <div class="nav">
+      <button id="prev">← Prev</button>
+      <button id="next">Next →</button>
+    </div>
+    <div class="progress" id="progress"></div>
+    <div class="hint">Press <kbd>←</kbd> <kbd>→</kbd> to navigate</div>
+  </div>
+
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+const progress = document.getElementById('progress');
+const currEl = document.getElementById('curr');
+const totalEl = document.getElementById('total');
+const actEl = document.getElementById('actLabel');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+let current = 0;
+
+totalEl.textContent = total;
+
+for (let i = 0; i < total; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  dot.addEventListener('click', () => go(i));
+  progress.appendChild(dot);
+}
+
+function go(i) {
+  if (i < 0 || i >= total) return;
+  slides[current].classList.remove('active');
+  current = i;
+  slides[current].classList.add('active');
+  currEl.textContent = i + 1;
+  actEl.textContent = slides[current].getAttribute('data-act') || '';
+  const dots = progress.querySelectorAll('.dot');
+  dots.forEach((d, idx) => {
+    d.classList.remove('active', 'visited');
+    if (idx === current) d.classList.add('active');
+    else if (idx < current) d.classList.add('visited');
+  });
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === total - 1;
+}
+
+prevBtn.addEventListener('click', () => go(current - 1));
+nextBtn.addEventListener('click', () => go(current + 1));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(current + 1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(current - 1); }
+  if (e.key === 'Home') { e.preventDefault(); go(0); }
+  if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+});
+
+// Expandable 8-step workflow
+const xsteps = document.querySelectorAll('#steps8 .xstep');
+xsteps.forEach(step => {
+  step.tabIndex = 0;
+  step.setAttribute('role', 'button');
+  step.setAttribute('aria-expanded', 'false');
+  const toggle = () => {
+    const open = step.classList.toggle('open');
+    step.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+  step.addEventListener('click', toggle);
+  step.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.stopPropagation(); e.preventDefault(); toggle(); }
+  });
+});
+const toggleAll8 = document.getElementById('toggleAll8');
+if (toggleAll8) {
+  toggleAll8.addEventListener('click', () => {
+    const anyClosed = [...xsteps].some(s => !s.classList.contains('open'));
+    xsteps.forEach(s => {
+      s.classList.toggle('open', anyClosed);
+      s.setAttribute('aria-expanded', anyClosed ? 'true' : 'false');
+    });
+    toggleAll8.textContent = anyClosed ? 'Collapse all' : 'Expand all';
+  });
+}
+
+go(0);
+</script>
+</body>
+</html>
