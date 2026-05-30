@@ -33,31 +33,68 @@
     display:flex;
     flex-direction:column;
   }
-  .wrap{max-width:760px;margin:0 auto;padding:0 32px;position:relative;z-index:2;width:100%}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 32px;position:relative;z-index:2;width:100%}
 
   /* ---- MAIN ---- */
-  main{flex:1;display:flex;align-items:center;padding:80px 0 60px}
+  main{flex:1;padding:80px 0 60px}
   .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--rust);margin-bottom:28px}
   h1.name{
-    font-family:'Fraunces',serif;font-weight:900;font-size:clamp(46px,9vw,92px);
+    font-family:'Fraunces',serif;font-weight:900;font-size:clamp(43.7px,8.55vw,87.4px);
     line-height:.96;letter-spacing:-.02em;color:var(--ink);
   }
   h1.name em{font-style:italic;color:var(--rust);font-weight:500}
-  .role{font-family:'IBM Plex Mono',monospace;font-size:13.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-top:22px}
-  .bio{font-size:clamp(19px,2.2vw,23px);max-width:54ch;margin-top:26px;line-height:1.5;color:var(--ink)}
+  h1.name .first{font-weight:400}
+  .bio{font-size:clamp(19px,2.2vw,23px);max-width:60ch;margin-top:26px;line-height:1.5;color:var(--ink)}
+
+  /* ---- TWO-COLUMN LAYOUT ---- */
+  .columns{display:grid;grid-template-columns:1.4fr 1.1fr;gap:48px;margin-top:56px;align-items:start}
+  .col-right .links{margin-top:0;border-top:none}
+  .col-right .section-label{margin-bottom:20px}
+  @media(max-width:760px){
+    .columns{grid-template-columns:1fr;gap:8px}
+  }
+
+  /* ---- SECTION SHARED ---- */
+  .section{margin-top:54px}
+  .section-label{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--rust);margin-bottom:20px;
+    padding-bottom:10px;border-bottom:1px solid var(--line);
+  }
+
+  /* ---- ACHIEVEMENTS ---- */
+  .ach{display:flex;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .ach:last-child{border-bottom:none}
+  .ach .mark{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--rust);min-width:28px;padding-top:6px;letter-spacing:.1em}
+  .ach .txt{font-size:18px;line-height:1.5}
+  .ach .txt strong{font-family:'Fraunces',serif;font-weight:600;color:var(--ink)}
+
+  /* ---- SKILLS ---- */
+  .skill-group{margin-bottom:22px}
+  .skill-group:last-child{margin-bottom:0}
+  .skill-group h3{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--teal);margin-bottom:10px;font-weight:500;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.02em;
+    color:var(--ink);background:var(--paper-2);border:1px solid var(--line);
+    padding:6px 12px;border-radius:2px;
+  }
 
   /* ---- LINKS ---- */
-  .links{margin-top:42px;border-top:1px solid var(--line)}
+  .links{margin-top:54px;border-top:1px solid var(--line)}
   .link{
-    display:flex;align-items:baseline;gap:18px;
+    display:flex;align-items:baseline;gap:14px;
     padding:20px 4px;border-bottom:1px solid var(--line);
     text-decoration:none;color:var(--ink);
     transition:padding-left .25s ease,background .25s ease;
   }
   .link:hover{padding-left:16px;background:var(--paper-2)}
   .link .num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--rust);letter-spacing:.1em;min-width:28px}
-  .link .label{font-family:'Fraunces',serif;font-weight:600;font-size:22px;flex:1}
-  .link .meta{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--mut);letter-spacing:.03em}
+  .link .label{font-family:'Fraunces',serif;font-weight:600;font-size:22px;flex:1;white-space:nowrap}
+  .link .meta{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--mut);letter-spacing:.03em;white-space:nowrap}
   .link .arrow{font-family:'IBM Plex Mono',monospace;color:var(--rust);transition:transform .25s ease}
   .link:hover .arrow{transform:translateX(5px)}
 
@@ -70,30 +107,67 @@
   .d2{animation-delay:.13s}
   .d3{animation-delay:.21s}
   .d4{animation-delay:.29s}
-  .link.reveal{animation-name:riseLink}
-  @keyframes riseLink{to{opacity:1;transform:none}}
+  .d5{animation-delay:.37s}
 </style>
 </head>
 <body>
 
 <main>
   <div class="wrap">
-    <div class="eyebrow reveal d1">QA Engineering · Process · Enablement</div>
-    <h1 class="name reveal d1">Stephanie <em>Haecker.</em></h1>
-    <div class="role reveal d2">Quality Assurance Engineer</div>
-    <p class="bio reveal d2">I build QA practices from scratch — designing the process, tooling, documentation, and training that let a team test with confidence, and leading them through full platform migrations.</p>
+    <div class="eyebrow reveal d1">QA Engineering · Architecture · Test Automation</div>
+    <h1 class="name reveal d1"><span class="first">Stephanie</span> <em>Haecker.</em></h1>
+    <p class="bio reveal d2">I partner with teams to build QA from the ground up — test strategy, tooling, documentation, and training — and guide them through testing tool migrations end to end. I stay hands-on across the stack: writing automation, running manual and exploratory testing, and using AI to augment test design, coverage, and execution.</p>
 
-    <div class="links">
+    <div class="columns">
+    <!-- ===== LEFT COLUMN ===== -->
+    <div class="col-left">
+    <!-- ===== KEY ACHIEVEMENTS ===== -->
+    <section class="section reveal d3" style="margin-top:0">
+      <div class="section-label">Key Achievements</div>
+
+      <div class="ach">
+        <span class="mark">01</span>
+        <p class="txt"><strong>Built a QA practice from scratch.</strong> Established the test strategy, processes, and documentation for a team with no prior QA function — defining standards, workflows, and onboarding that the team still runs on today.</p>
+      </div>
+
+      <div class="ach">
+        <span class="mark">02</span>
+        <p class="txt"><strong>Designed and implemented an automation framework.</strong> Built Playwright and Postman automation running in GitHub Actions, strengthening regression coverage and surfacing defects earlier in the release cycle.</p>
+      </div>
+
+      <div class="ach">
+        <span class="mark">03</span>
+        <p class="txt"><strong>Led testing tool migrations.</strong> Guided the team through transitions across test and work management platforms — Azure DevOps to Pivotal Tracker to monday.com — planning the moves, preserving continuity, and minimizing disruption to active testing.</p>
+      </div>
+
+      <div class="ach">
+        <span class="mark">04</span>
+        <p class="txt"><strong>Built out API &amp; performance testing.</strong> Used Postman for API validation and performance checks and JMeter for load and performance testing, helping surface bottlenecks and integration issues ahead of release.</p>
+      </div>
+
+      <div class="ach">
+        <span class="mark">05</span>
+        <p class="txt"><strong>Brought AI into the testing workflow.</strong> Introduced AI-assisted workflows that reduced manual testing estimates and test preparation effort by roughly 25%, while continuing to run manual and exploratory testing directly.</p>
+      </div>
+    </section>
+    </div><!-- /col-left -->
+
+    <!-- ===== RIGHT COLUMN ===== -->
+    <div class="col-right">
+    <section class="section reveal d5" style="margin-top:0">
+      <div class="section-label">Explore</div>
+    <!-- ===== LINKS ===== -->
+    <div class="links reveal d5">
       <!-- PORTFOLIO: links to the portfolio page in this same repo -->
-      <a class="link reveal d2" href="qa-blueprint.html">
+      <a class="link" href="qa-blueprint.html">
         <span class="num">01</span>
         <span class="label">QA Blueprint</span>
-        <span class="meta">QA process &amp; artifacts</span>
+        <span class="meta">Framework and process</span>
         <span class="arrow">&rarr;</span>
       </a>
 
       <!-- RESUME: replace href with your resume PDF link (e.g. resume.pdf in this repo, or a Google Drive share link) -->
-      <a class="link reveal d3" href="REPLACE_WITH_RESUME_PDF_LINK">
+      <a class="link" href="REPLACE_WITH_RESUME_PDF_LINK">
         <span class="num">02</span>
         <span class="label">Resume</span>
         <span class="meta">PDF</span>
@@ -101,7 +175,7 @@
       </a>
 
       <!-- LINKEDIN: replace href with your LinkedIn profile URL -->
-      <a class="link reveal d3" href="REPLACE_WITH_LINKEDIN_URL" target="_blank" rel="noopener">
+      <a class="link" href="REPLACE_WITH_LINKEDIN_URL" target="_blank" rel="noopener">
         <span class="num">03</span>
         <span class="label">LinkedIn</span>
         <span class="meta">Profile</span>
@@ -109,13 +183,87 @@
       </a>
 
       <!-- EMAIL: replace the address after mailto: with your email -->
-      <a class="link reveal d4" href="mailto:REPLACE_WITH_EMAIL_ADDRESS">
+      <a class="link" href="mailto:REPLACE_WITH_EMAIL_ADDRESS">
         <span class="num">04</span>
         <span class="label">Email</span>
         <span class="meta">Get in touch</span>
         <span class="arrow">&rarr;</span>
       </a>
     </div>
+    </section>
+
+    <!-- ===== SKILLS ===== -->
+    <section class="section reveal d5">
+      <div class="section-label">Skills &amp; Tooling</div>
+
+      <div class="skill-group">
+        <h3>Testing</h3>
+        <div class="tags">
+          <span class="tag">API Testing</span>
+          <span class="tag">Database / SQL Validation</span>
+          <span class="tag">Integration Testing</span>
+          <span class="tag">Regression &amp; Smoke Testing</span>
+          <span class="tag">Manual &amp; Exploratory Testing</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Automation</h3>
+        <div class="tags">
+          <span class="tag">Playwright / TypeScript</span>
+          <span class="tag">Postman</span>
+          <span class="tag">JMeter</span>
+          <span class="tag">SoapUI</span>
+          <span class="tag">TestRail</span>
+          <span class="tag">TestProject</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>AI-Assisted Workflows</h3>
+        <div class="tags">
+          <span class="tag">ChatGPT</span>
+          <span class="tag">Claude</span>
+          <span class="tag">Cursor</span>
+          <span class="tag">NotebookLM</span>
+          <span class="tag">Perplexity</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Release / Dev &amp; Collaboration</h3>
+        <div class="tags">
+          <span class="tag">Azure DevOps</span>
+          <span class="tag">GitHub</span>
+          <span class="tag">ServiceNow</span>
+          <span class="tag">GitBook</span>
+          <span class="tag">monday.com</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>SQL</h3>
+        <div class="tags">
+          <span class="tag">MySQL</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">SQL Server</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Process &amp; Strategy</h3>
+        <div class="tags">
+          <span class="tag">Release Readiness &amp; Validation</span>
+          <span class="tag">Test Strategy</span>
+          <span class="tag">Go/No-Go Support</span>
+          <span class="tag">Risk Communication</span>
+          <span class="tag">Agile / Scrum</span>
+          <span class="tag">Process Improvement</span>
+        </div>
+      </div>
+    </section>
+    </div><!-- /col-right -->
+    </div><!-- /columns -->
   </div>
 </main>
 
