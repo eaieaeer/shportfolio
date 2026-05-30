@@ -86,15 +86,16 @@
   /* ---- LINKS ---- */
   .links{margin-top:54px;border-top:1px solid var(--line)}
   .link{
-    display:flex;align-items:baseline;gap:14px;
-    padding:20px 4px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:14px;
+    padding:16px 4px;border-bottom:1px solid var(--line);
     text-decoration:none;color:var(--ink);
     transition:padding-left .25s ease,background .25s ease;
   }
   .link:hover{padding-left:16px;background:var(--paper-2)}
   .link .num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--rust);letter-spacing:.1em;min-width:28px}
-  .link .label{font-family:'Fraunces',serif;font-weight:600;font-size:22px;flex:1;white-space:nowrap}
-  .link .meta{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--mut);letter-spacing:.03em;white-space:nowrap}
+  .link .link-text{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+  .link .label{font-family:'Fraunces',serif;font-weight:600;font-size:19px;line-height:1.1}
+  .link .meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mut);letter-spacing:.03em}
   .link .arrow{font-family:'IBM Plex Mono',monospace;color:var(--rust);transition:transform .25s ease}
   .link:hover .arrow{transform:translateX(5px)}
 
@@ -161,40 +162,50 @@
       <!-- PORTFOLIO: links to the portfolio page in this same repo -->
       <a class="link" href="qa-blueprint.html">
         <span class="num">01</span>
-        <span class="label">QA Blueprint</span>
-        <span class="meta">Framework and process</span>
+        <span class="link-text">
+          <span class="label">QA Blueprint</span>
+          <span class="meta">Framework and process</span>
+        </span>
         <span class="arrow">&rarr;</span>
       </a>
 
       <!-- DEV/QA OPERATING MODEL -->
       <a class="link" href="architectDevTestStrategyEnhancements_v1.html">
         <span class="num">02</span>
-        <span class="label">Dev/QA Operating Model</span>
-        <span class="meta">Shift-left &amp; shared process</span>
+        <span class="link-text">
+          <span class="label">Dev/QA Operating Model</span>
+          <span class="meta">Shift-left &amp; shared process</span>
+        </span>
         <span class="arrow">&rarr;</span>
       </a>
 
       <!-- RESUME -->
       <a class="link" href="HaeckerStephanie_Resume_2026.pdf" target="_blank" rel="noopener">
         <span class="num">03</span>
-        <span class="label">Resume</span>
-        <span class="meta">PDF</span>
+        <span class="link-text">
+          <span class="label">Resume</span>
+          <span class="meta">PDF</span>
+        </span>
         <span class="arrow">&rarr;</span>
       </a>
 
       <!-- LINKEDIN -->
       <a class="link" href="https://www.linkedin.com/in/stephaniehaecker/" target="_blank" rel="noopener">
         <span class="num">04</span>
-        <span class="label">LinkedIn</span>
-        <span class="meta">Profile</span>
+        <span class="link-text">
+          <span class="label">LinkedIn</span>
+          <span class="meta">Profile</span>
+        </span>
         <span class="arrow">&rarr;</span>
       </a>
 
       <!-- EMAIL -->
       <a class="link" href="mailto:haecker.stephanie@gmail.com">
         <span class="num">05</span>
-        <span class="label">Email</span>
-        <span class="meta">Get in touch</span>
+        <span class="link-text">
+          <span class="label">Email</span>
+          <span class="meta">Get in touch</span>
+        </span>
         <span class="arrow">&rarr;</span>
       </a>
     </div>
