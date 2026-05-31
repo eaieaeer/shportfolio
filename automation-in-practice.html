@@ -63,6 +63,15 @@
 
   /* ---- SECTION SHARED ---- */
   .section{margin-top:56px}
+
+  /* ---- TWO-COLUMN BODY ---- */
+  .body-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 44px;align-items:start;margin-top:0}
+  .body-cols .col{min-width:0}
+  .body-cols .col > .section:first-child{margin-top:56px}
+  @media(max-width:820px){
+    .body-cols{grid-template-columns:1fr;gap:0}
+    .body-cols .col-right > .section:first-child{margin-top:56px}
+  }
   .section-label{
     font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.28em;
     text-transform:uppercase;color:var(--rust);margin-bottom:22px;
@@ -88,7 +97,7 @@
     font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
     color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
   }
-  .tree{font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.85;padding:18px 16px;overflow-x:auto;color:var(--ink)}
+  .tree{font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.85;padding:16px 12px;overflow-x:auto;color:var(--ink)}
   .tree .row{white-space:pre;display:block}
   .tree .branch{color:var(--line)}
   .tree .dir{color:var(--rust);font-weight:500}
@@ -104,6 +113,18 @@
   .legend .d-fw{background:var(--gold)}
   .legend .d-cfg{background:var(--mut)}
 
+  /* ---- SCREENSHOT FIGURE ---- */
+  .shot{margin-top:8px;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--paper-2)}
+  .shot .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  .shot img{display:block;width:100%;height:auto}
+  .shot figcaption{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mut);
+    padding:10px 16px;border-top:1px solid var(--line);letter-spacing:.02em;line-height:1.5;
+  }
+
   /* ---- CODE BLOCK ---- */
   .code-card{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
   .code-card .code-head{
@@ -111,8 +132,8 @@
     color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
   }
   pre{
-    font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.7;
-    padding:18px 16px;overflow-x:auto;color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;
+    padding:16px 12px;overflow-x:auto;color:var(--ink);
   }
   pre .k{color:var(--rust)}      /* keyword */
   pre .s{color:var(--teal)}      /* string */
@@ -170,6 +191,10 @@
       <span>AWS S3</span>
     </div>
 
+    <!-- ===== TWO-COLUMN BODY ===== -->
+    <div class="body-cols">
+    <div class="col col-left">
+
     <!-- ===== WHAT IT DOES ===== -->
     <section class="section reveal d3">
       <div class="section-label">What it achieves</div>
@@ -201,26 +226,6 @@
       </div>
     </section>
 
-    <!-- ===== ARCHITECTURE ===== -->
-    <section class="section reveal d3">
-      <div class="section-label">How it's organized</div>
-      <p>The repository is structured by layer and by business domain rather than by file type, so a test for a given product line and role lives where you'd expect it. End-to-end suites, API suites, and shared framework utilities stay cleanly separated.</p>
-
-      <div class="tree-card">
-        <div class="code-head">repository structure (generalized)</div>
-        <div class="tree"><span class="row"><span class="dir">payments-automation/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-direct-admin/</span><span class="ann">      ← UI suites, by product line + role</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-direct-merchant/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-admin/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-merchant/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-partners/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-signup/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api/</span><span class="ann">                  ← API suites, validated independently</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api-gateway/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">framework/</span><span class="ann">            ← shared fixtures, helpers, base pages</span></span><span class="row"><span class="branch">│  ├─ </span><span class="file">fixtures.ts</span></span><span class="row"><span class="branch">│  └─ </span><span class="file">base.po.ts</span><span class="ann">         ← page objects extend this base</span></span><span class="row"><span class="branch">├─ </span><span class="dir">.github/</span><span class="ann">              ← GitHub Actions CI/CD pipelines</span></span><span class="row"><span class="branch">├─ </span><span class="file">playwright.config.ts</span><span class="ann">  ← projects: chromium · firefox · webkit</span></span><span class="row"><span class="branch">├─ </span><span class="file">global-teardown.ts</span></span><span class="row"><span class="branch">├─ </span><span class="file">.env.example</span><span class="ann">          ← committed template (no secrets)</span></span><span class="row"><span class="branch">└─ </span><span class="file">.env.{prd,qa,sit,uat}</span><span class="ann"> ← pulled from S3, never committed</span></span></div>
-      </div>
-
-      <div class="legend">
-        <span class="item"><span class="dot d-e2e"></span> End-to-end UI suites</span>
-        <span class="item"><span class="dot d-api"></span> API suites</span>
-        <span class="item"><span class="dot d-fw"></span> Shared framework</span>
-        <span class="item"><span class="dot d-cfg"></span> Config &amp; environment</span>
-      </div>
-
-      <p style="margin-top:18px">Each <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--rust)">e2e-*</span> folder pairs page objects (<span style="font-family:'IBM Plex Mono',monospace;font-size:14px">.po.ts</span>) with their specs (<span style="font-family:'IBM Plex Mono',monospace;font-size:14px">.test.ts</span>), while shared logic lives once in <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--rust)">framework/</span>. Adding a new product line means adding a folder, not untangling existing tests.</p>
-    </section>
-
     <!-- ===== ENGINEERING PRACTICES ===== -->
     <section class="section reveal d3">
       <div class="section-label">Engineering practices</div>
@@ -242,40 +247,6 @@
         <span class="mark">04</span>
         <p class="txt"><strong>Clean version control.</strong> Branch and merge work — including resolving merge conflicts — keeps the suite stable and releasable.</p>
       </div>
-    </section>
-
-    <!-- ===== CODE SNIPPET ===== -->
-    <section class="section reveal d4">
-      <div class="section-label">A look at the pattern</div>
-      <p>A representative (generalized) example of the Page Object Model in use — a page object that holds the locators and actions for a login screen, and a spec that reads as plain intent:</p>
-
-      <div class="code-card">
-        <div class="code-head">login.po.ts &middot; page object</div>
-<pre><span class="c">// The page object owns the "how" — where the fields are</span>
-<span class="c">// and what to click. Tests never touch raw selectors.</span>
-<span class="k">export class</span> <span class="f">LoginPage</span> {
-  <span class="k">constructor</span>(<span class="k">private readonly</span> page: Page) {}
-
-  <span class="k">async</span> <span class="f">login</span>(username: <span class="k">string</span>, password: <span class="k">string</span>) {
-    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">goto</span>(process.env.<span class="f">MERCHANT_URL</span>!);
-    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Username'</span>).<span class="f">fill</span>(username);
-    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Password'</span>).<span class="f">fill</span>(password);
-    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByRole</span>(<span class="s">'button'</span>, { name: <span class="s">'Sign in'</span> }).<span class="f">click</span>();
-  }
-}</pre>
-      </div>
-
-      <div class="code-card" style="margin-top:18px">
-        <div class="code-head">merchant-login.test.ts &middot; spec</div>
-<pre><span class="c">// The spec owns the "what" — it reads like a sentence.</span>
-<span class="k">test</span>(<span class="s">'merchant can sign in and reach the dashboard'</span>, <span class="k">async</span> ({ page }) =&gt; {
-  <span class="k">const</span> login = <span class="k">new</span> <span class="f">LoginPage</span>(page);
-  <span class="k">await</span> login.<span class="f">login</span>(users.merchant.name, users.merchant.password);
-
-  <span class="k">await</span> <span class="f">expect</span>(page.<span class="f">getByRole</span>(<span class="s">'heading'</span>, { name: <span class="s">'Dashboard'</span> })).<span class="f">toBeVisible</span>();
-});</pre>
-      </div>
-      <p class="code-note">Illustrative example — locators and credentials are generalized, not from any live environment.</p>
     </section>
 
     <!-- ===== SKILLSET ===== -->
@@ -314,6 +285,84 @@
         </div>
       </div>
     </section>
+
+    </div><!-- /col-left -->
+    <div class="col col-right">
+
+    <!-- ===== ARCHITECTURE ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">How it's organized</div>
+      <p>The repository is structured by layer and by business domain rather than by file type, so a test for a given product line and role lives where you'd expect it. End-to-end suites, API suites, and shared framework utilities stay cleanly separated.</p>
+
+      <div class="tree-card">
+        <div class="code-head">repository structure (generalized)</div>
+        <div class="tree"><span class="row"><span class="dir">payments-automation/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-direct-admin/</span><span class="ann">      ← UI suites, by product line + role</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-direct-merchant/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-admin/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-merchant/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-partners/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-signup/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api/</span><span class="ann">                  ← API suites, validated independently</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api-gateway/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">framework/</span><span class="ann">            ← shared fixtures, helpers, base pages</span></span><span class="row"><span class="branch">│  ├─ </span><span class="file">fixtures.ts</span></span><span class="row"><span class="branch">│  └─ </span><span class="file">base.po.ts</span><span class="ann">         ← page objects extend this base</span></span><span class="row"><span class="branch">├─ </span><span class="dir">.github/</span><span class="ann">              ← GitHub Actions CI/CD pipelines</span></span><span class="row"><span class="branch">├─ </span><span class="file">playwright.config.ts</span><span class="ann">  ← projects: chromium · firefox · webkit</span></span><span class="row"><span class="branch">├─ </span><span class="file">global-teardown.ts</span></span><span class="row"><span class="branch">├─ </span><span class="file">.env.example</span><span class="ann">          ← committed template (no secrets)</span></span><span class="row"><span class="branch">└─ </span><span class="file">.env.{prd,qa,sit,uat}</span><span class="ann"> ← pulled from S3, never committed</span></span></div>
+      </div>
+
+      <div class="legend">
+        <span class="item"><span class="dot d-e2e"></span> End-to-end UI suites</span>
+        <span class="item"><span class="dot d-api"></span> API suites</span>
+        <span class="item"><span class="dot d-fw"></span> Shared framework</span>
+        <span class="item"><span class="dot d-cfg"></span> Config &amp; environment</span>
+      </div>
+
+      <p style="margin-top:18px">Each <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--rust)">e2e-*</span> folder pairs page objects (<span style="font-family:'IBM Plex Mono',monospace;font-size:14px">.po.ts</span>) with their specs (<span style="font-family:'IBM Plex Mono',monospace;font-size:14px">.test.ts</span>), while shared logic lives once in <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--rust)">framework/</span>. Adding a new product line means adding a folder, not untangling existing tests.</p>
+    </section>
+
+    <!-- ===== CODE SNIPPET ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">A look at the pattern</div>
+      <p>A representative (generalized) example of the Page Object Model in use — a page object that holds the locators and actions for a login screen, and a spec that reads as plain intent:</p>
+
+      <div class="code-card">
+        <div class="code-head">login.po.ts &middot; page object</div>
+<pre><span class="c">// The page object owns the "how" — where the fields are</span>
+<span class="c">// and what to click. Tests never touch raw selectors.</span>
+<span class="k">export class</span> <span class="f">LoginPage</span> {
+  <span class="k">constructor</span>(<span class="k">private readonly</span> page: Page) {}
+
+  <span class="k">async</span> <span class="f">login</span>(username: <span class="k">string</span>, password: <span class="k">string</span>) {
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">goto</span>(process.env.<span class="f">MERCHANT_URL</span>!);
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Username'</span>).<span class="f">fill</span>(username);
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Password'</span>).<span class="f">fill</span>(password);
+    <span class="k">await</span> <span class="k">this</span>.page
+      .<span class="f">getByRole</span>(<span class="s">'button'</span>, { name: <span class="s">'Sign in'</span> })
+      .<span class="f">click</span>();
+  }
+}</pre>
+      </div>
+
+      <div class="code-card" style="margin-top:18px">
+        <div class="code-head">merchant-login.test.ts &middot; spec</div>
+<pre><span class="c">// The spec owns the "what" — it reads like a sentence.</span>
+<span class="k">test</span>(<span class="s">'merchant can sign in and reach the dashboard'</span>,
+  <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">const</span> login = <span class="k">new</span> <span class="f">LoginPage</span>(page);
+  <span class="k">await</span> login.<span class="f">login</span>(
+    users.merchant.name, users.merchant.password);
+
+  <span class="k">await</span> <span class="f">expect</span>(
+    page.<span class="f">getByRole</span>(<span class="s">'heading'</span>, { name: <span class="s">'Dashboard'</span> })
+  ).<span class="f">toBeVisible</span>();
+});</pre>
+      </div>
+      <p class="code-note">Illustrative example — locators and credentials are generalized, not from any live environment.</p>
+    </section>
+
+    <!-- ===== SCREENSHOT ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">In the editor</div>
+      <p>The committed <span style="font-family:'IBM Plex Mono',monospace;font-size:14px">.env.example</span> template alongside the project tree — documenting every required variable while keeping real credentials out of the repository.</p>
+
+      <figure class="shot">
+        <div class="code-head">.env.example &middot; VS Code</div>
+        <img src="assets/env-example-vscode.png" alt="VS Code showing the .env.example template and the project's folder structure, with environment variables documented and no real values committed." loading="lazy">
+        <figcaption>Sensitive paths and identifiers redacted. Variable names are structural placeholders with no values committed.</figcaption>
+      </figure>
+    </section>
+
+    </div><!-- /col-right -->
+    </div><!-- /body-cols -->
 
     <div class="note reveal d5">The framework's structure tells the story: domain-organized suites, page objects separated from specs, secrets externalized, and quality gates enforced in CI. That separation of concerns is what distinguishes maintainable automation from brittle scripts.</div>
 
