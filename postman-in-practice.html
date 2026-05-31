@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Testing in Practice · Stephanie Haecker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1a17;
+    --paper:#f3ede1;
+    --paper-2:#ece3d3;
+    --rust:#9c4221;
+    --rust-bright:#c05621;
+    --teal:#1d4d4a;
+    --gold:#b7791f;
+    --line:#cbbfa8;
+    --mut:#6b6354;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Newsreader',Georgia,serif;
+    font-size:19px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 32px;position:relative;z-index:2;width:100%}
+
+  main{flex:1;padding:80px 0 60px}
+
+  /* ---- BACK LINK ---- */
+  .back{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--rust);text-decoration:none;
+    display:inline-flex;align-items:center;gap:8px;margin-bottom:40px;
+    transition:gap .25s ease;
+  }
+  .back:hover{gap:14px}
+
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--rust);margin-bottom:28px}
+  h1.title{
+    font-family:'Fraunces',serif;font-weight:900;font-size:clamp(36px,6.2vw,64px);
+    line-height:1.0;letter-spacing:-.02em;color:var(--ink);
+  }
+  h1.title em{font-style:italic;color:var(--rust);font-weight:500}
+  .lede{font-size:clamp(17.1px,1.98vw,20.7px);max-width:64ch;margin-top:26px;line-height:1.5;color:var(--ink)}
+
+  /* ---- META STRIP ---- */
+  .meta-strip{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;
+    color:var(--teal);margin-top:22px;display:flex;flex-wrap:wrap;gap:8px 14px;
+  }
+  .meta-strip span:not(:last-child)::after{content:"·";margin-left:14px;color:var(--line)}
+
+  /* ---- SECTION SHARED ---- */
+  .section{margin-top:56px}
+
+  /* ---- TWO-COLUMN BODY ---- */
+  .body-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 44px;align-items:start;margin-top:0}
+  .body-cols .col{min-width:0}
+  .body-cols .col > .section:first-child{margin-top:56px}
+  @media(max-width:820px){
+    .body-cols{grid-template-columns:1fr;gap:0}
+    .body-cols .col-right > .section:first-child{margin-top:56px}
+  }
+  .section-label{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--rust);margin-bottom:22px;
+    padding-bottom:10px;border-bottom:1px solid var(--line);
+  }
+  .section > p{max-width:68ch;margin-bottom:18px}
+  .section > p:last-child{margin-bottom:0}
+  .section h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:26px;color:var(--ink);
+    margin-bottom:14px;letter-spacing:-.01em;
+  }
+
+  /* ---- FEATURE LIST (numbered, like achievements) ---- */
+  .feat{display:flex;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .feat:last-child{border-bottom:none}
+  .feat .mark{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--rust);min-width:28px;padding-top:6px;letter-spacing:.1em}
+  .feat .txt{font-size:18px;line-height:1.5}
+  .feat .txt strong{font-family:'Fraunces',serif;font-weight:600;color:var(--ink)}
+
+  /* ---- ARCHITECTURE TREE ---- */
+  .tree-card{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
+  .tree-card .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  .tree{font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.85;padding:16px 12px;overflow-x:auto;color:var(--ink)}
+  .tree .row{white-space:pre;display:block}
+  .tree .branch{color:var(--line)}
+  .tree .dir{color:var(--rust);font-weight:500}
+  .tree .file{color:var(--ink)}
+  .tree .ann{color:var(--mut);font-style:italic}
+  .tree .layer{color:var(--teal)}
+  /* layer legend */
+  .legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:18px}
+  .legend .item{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink)}
+  .legend .dot{width:10px;height:10px;border-radius:2px;flex:none}
+  .legend .d-e2e{background:var(--rust)}
+  .legend .d-api{background:var(--teal)}
+  .legend .d-fw{background:var(--gold)}
+  .legend .d-cfg{background:var(--mut)}
+
+  /* ---- COLLECTIONS PANEL (Postman sidebar) ---- */
+  .collections{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
+  .collections .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  .coll-body{padding:6px 0}
+  .coll-group{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--rust);padding:10px 16px 6px;
+  }
+  .coll-row{
+    display:flex;align-items:center;gap:8px;padding:5px 16px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink);
+  }
+  .coll-row .chev{color:var(--line);font-size:10px}
+  .coll-row .ico{color:var(--teal);font-size:11px}
+  .coll-row.env .ico{color:var(--gold)}
+  .coll-sep{height:1px;background:var(--line);margin:6px 0}
+
+  /* ---- CODE BLOCK ---- */
+  .code-card{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
+  .code-card .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  pre{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.7;
+    padding:16px 12px;overflow-x:auto;color:var(--ink);
+  }
+  pre .k{color:var(--rust)}      /* keyword */
+  pre .s{color:var(--teal)}      /* string */
+  pre .c{color:var(--mut);font-style:italic} /* comment */
+  pre .f{color:var(--gold)}      /* function/identifier */
+  .code-note{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mut);margin-top:10px;letter-spacing:.02em}
+
+  /* ---- SKILLS TAGS ---- */
+  .skill-group{margin-bottom:22px}
+  .skill-group:last-child{margin-bottom:0}
+  .skill-group h3{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--teal);margin-bottom:10px;font-weight:500;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.02em;
+    color:var(--ink);background:var(--paper-2);border:1px solid var(--line);
+    padding:6px 12px;border-radius:2px;
+  }
+
+  /* ---- PULL NOTE ---- */
+  .note{
+    border-left:3px solid var(--rust);padding:14px 20px;margin-top:28px;
+    background:var(--paper-2);font-style:italic;font-size:17px;line-height:1.55;color:var(--ink);
+    max-width:68ch;
+  }
+
+  footer{padding:30px 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+
+  .reveal{opacity:0;transform:translateY(20px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .d1{animation-delay:.05s}
+  .d2{animation-delay:.13s}
+  .d3{animation-delay:.21s}
+  .d4{animation-delay:.29s}
+  .d5{animation-delay:.37s}
+</style>
+</head>
+<body>
+
+<main>
+  <div class="wrap">
+    <a class="back reveal d1" href="index.html">&larr; Back to portfolio</a>
+
+    <div class="eyebrow reveal d1">In Practice · Craft</div>
+    <h1 class="title reveal d1">A <em>transactional API</em> test suite in Postman.</h1>
+    <p class="lede reveal d2">A functional API-testing workspace for a transactional platform — built in Postman to exercise tokenization, transaction lifecycles, and account configuration across several environments, with JWT-signed auth, chained workflows, and disciplined negative-case coverage.</p>
+
+    <div class="meta-strip reveal d2">
+      <span>Postman</span>
+      <span>JavaScript (pm.* / Chai)</span>
+      <span>JWT / HMAC-SHA512</span>
+      <span>Collection Runner</span>
+      <span>Newman-ready</span>
+    </div>
+
+    <!-- ===== TWO-COLUMN BODY ===== -->
+    <div class="body-cols">
+    <div class="col col-left">
+
+    <!-- ===== WHAT IT DOES ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">What it achieves</div>
+      <p>The workspace lets the QA team functionally validate a transactional platform's API layer before release. More than a dozen collections span four domains — tokenization, transactions, account configuration, and infrastructure smoke checks — run consistently across several environments through saved environment files.</p>
+
+      <div class="feat">
+        <span class="mark">01</span>
+        <p class="txt"><strong>Tokenization &amp; vaulting.</strong> Create, retrieve, update, delete, and decrypt tokens across multiple account and instrument types, plus token-group management and return-code handling.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">02</span>
+        <p class="txt"><strong>Full transaction lifecycles.</strong> Multi-step state flows (create → authorize → confirm → reverse → refund) across several transaction types, both synchronous and asynchronous, validated end to end.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">03</span>
+        <p class="txt"><strong>Multi-environment coverage.</strong> Five environments driven by saved environment files holding per-environment URLs and variables, so the same requests run anywhere by switching context.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">04</span>
+        <p class="txt"><strong>Deep negative &amp; boundary testing.</strong> Dozens of variant requests per operation — blank or over-length identifiers, non-numeric values in numeric fields, invalid type codes, expired records, checksum-failing inputs, missing required fields, unexpected extra fields, missing auth.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">05</span>
+        <p class="txt"><strong>Chained regression suites.</strong> Ordered, numbered requests built to run in sequence through the Collection Runner, passing IDs from one response into the next.</p>
+      </div>
+    </section>
+
+    <!-- ===== ENGINEERING PRACTICES ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">Engineering practices</div>
+      <p>The workspace reflects deliberate conventions for organization, reuse, and test-data management — and a clear view of what to harden next.</p>
+
+      <div class="feat">
+        <span class="mark">01</span>
+        <p class="txt"><strong>Reusable reference master.</strong> A read-only "API references — duplicate, don't edit" folder keeps a canonical copy of each request, so suites are built by copying from a known-good source.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">02</span>
+        <p class="txt"><strong>Test-data hygiene.</strong> A pre-request script auto-increments a unique account identifier with BigInt on every run and rewrites the body, so repeated executions never collide on duplicate data.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">03</span>
+        <p class="txt"><strong>Environment guards.</strong> Folder-level tests assert each request actually hit the intended URL — checking both the variable form and the literal value — to catch misconfigured environments early.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">04</span>
+        <p class="txt"><strong>Identified the secrets gap.</strong> Flagged plaintext credentials and hardcoded IDs as a risk, with a remediation path to Postman vault / secret variables or an external secrets manager — security judgment, not just test writing.</p>
+      </div>
+    </section>
+
+    <!-- ===== SKILLSET ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">Skillset demonstrated</div>
+
+      <div class="skill-group">
+        <h3>Core</h3>
+        <div class="tags">
+          <span class="tag">REST / HTTP</span>
+          <span class="tag">Postman</span>
+          <span class="tag">Collection Runner</span>
+          <span class="tag">Newman / CI</span>
+          <span class="tag">JSON Shaping</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Scripting</h3>
+        <div class="tags">
+          <span class="tag">JavaScript (pm.*)</span>
+          <span class="tag">Chai Assertions</span>
+          <span class="tag">CryptoJS</span>
+          <span class="tag">JWT / HMAC-SHA512</span>
+          <span class="tag">BigInt / base64url</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Domain &amp; QA</h3>
+        <div class="tags">
+          <span class="tag">Transaction Lifecycles</span>
+          <span class="tag">Tokenization / Vaulting</span>
+          <span class="tag">Chained Workflows</span>
+          <span class="tag">Field &amp; Checksum Validation</span>
+          <span class="tag">Boundary / Negative Design</span>
+          <span class="tag">Secrets Hygiene</span>
+        </div>
+      </div>
+    </section>
+
+    </div><!-- /col-left -->
+    <div class="col col-right">
+
+    <!-- ===== ARCHITECTURE ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">How it's organized</div>
+      <p>Collections are organized by environment and lifecycle rather than purely by endpoint. Inside a collection you find folders per environment, then per operation; regression collections go further, ordering requests into runnable, numbered suites.</p>
+
+      <div class="tree-card">
+        <div class="code-head">workspace structure (generalized)</div>
+        <div class="tree"><span class="row"><span class="dir">transactional-api-workspace/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">Tokenization/</span><span class="ann">       ← create · retrieve · delete · decrypt</span></span><span class="row"><span class="branch">│  ├─ </span><span class="dir">Tokenization – SIT/</span></span><span class="row"><span class="branch">│  ├─ </span><span class="dir">Tokenization – QA/</span></span><span class="row"><span class="branch">│  └─ </span><span class="dir">Tokenization – UAT/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">Transactions – Type A/</span><span class="ann"> ← create → authorize → confirm → refund</span></span><span class="row"><span class="branch">├─ </span><span class="dir">Transactions – Type B/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">Transactions – Type C/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">Account Config/</span><span class="ann">      ← account setup</span></span><span class="row"><span class="branch">├─ </span><span class="dir">System Status/</span><span class="ann">       ← health / build pings</span></span><span class="row"><span class="branch">├─ </span><span class="dir">API References/</span><span class="ann">      ← read-only master</span></span><span class="row"><span class="branch">└─ </span><span class="file">environments/</span><span class="ann">       ← multiple test tiers</span></span></div>
+      </div>
+
+      <div class="legend">
+        <span class="item"><span class="dot d-e2e"></span> Tokenization</span>
+        <span class="item"><span class="dot d-api"></span> Transactions</span>
+        <span class="item"><span class="dot d-fw"></span> Config &amp; references</span>
+        <span class="item"><span class="dot d-cfg"></span> Infra &amp; environments</span>
+      </div>
+
+      <p style="margin-top:18px">Regression collections order requests into numbered, runnable suites (<span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--rust)">1. Create Token</span> → <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--rust)">2. Decrypt Token</span>), chaining values from each response into the next via environment variables.</p>
+    </section>
+
+    <!-- ===== CODE SNIPPET ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">A look at the pattern</div>
+      <p>Two pieces do the real work: a pre-request script that signs a JWT for auth, and post-response tests that assert the platform's business response. Both are generalized below — no real keys or secrets.</p>
+
+      <div class="code-card">
+        <div class="code-head">pre-request &middot; JWT signing (HMAC-SHA512)</div>
+<pre><span class="c">// Build a signed JWT and stash it for the request to use.</span>
+<span class="k">const</span> header  = { alg: <span class="s">'HS512'</span>, typ: <span class="s">'JWT'</span> };
+<span class="k">const</span> payload = {
+  sub: pm.environment.<span class="f">get</span>(<span class="s">'apiKey'</span>),
+  iat: Math.<span class="f">floor</span>(Date.<span class="f">now</span>() / <span class="s">1000</span>),
+};
+
+<span class="k">const</span> enc = (o) =&gt;
+  CryptoJS.enc.Base64url
+    .<span class="f">stringify</span>(CryptoJS.enc.Utf8.<span class="f">parse</span>(JSON.<span class="f">stringify</span>(o)));
+
+<span class="k">const</span> data   = <span class="s">`${</span><span class="f">enc</span>(header)<span class="s">}.${</span><span class="f">enc</span>(payload)<span class="s">}`</span>;
+<span class="k">const</span> secret = CryptoJS.enc.Base64url
+  .<span class="f">parse</span>(pm.environment.<span class="f">get</span>(<span class="s">'apiSecret'</span>));
+<span class="k">const</span> sig = CryptoJS.enc.Base64url
+  .<span class="f">stringify</span>(CryptoJS.<span class="f">HmacSHA512</span>(data, secret));
+
+pm.environment.<span class="f">set</span>(<span class="s">'jwt_signed'</span>, <span class="s">`${</span>data<span class="s">}.${</span>sig<span class="s">}`</span>);
+pm.environment.<span class="f">set</span>(<span class="s">'traceId'</span>, crypto.<span class="f">randomUUID</span>());</pre>
+      </div>
+
+      <div class="code-card" style="margin-top:18px">
+        <div class="code-head">tests &middot; post-response assertions</div>
+<pre><span class="f">pm</span>.<span class="f">test</span>(<span class="s">'200 OK, approved, token returned'</span>, () =&gt; {
+  pm.response.<span class="f">to</span>.have.<span class="f">status</span>(<span class="s">200</span>);
+  <span class="k">const</span> body = pm.response.<span class="f">json</span>();
+
+  pm.<span class="f">expect</span>(body.responseCode).<span class="f">to</span>.<span class="f">eql</span>(<span class="s">'APPROVED_CODE'</span>);
+  pm.<span class="f">expect</span>(body.responseMessage).<span class="f">to</span>.<span class="f">eql</span>(<span class="s">'Approved'</span>);
+  pm.<span class="f">expect</span>(body.token).<span class="f">to</span>.be.a(<span class="s">'string'</span>).<span class="f">that</span>.is.not.empty;
+
+  <span class="c">// chain: hand the token to the next request</span>
+  pm.environment.<span class="f">set</span>(<span class="s">'vaultToken'</span>, body.token);
+});</pre>
+      </div>
+      <p class="code-note">Illustrative examples — keys, secrets, and response values are generalized, not from any live environment.</p>
+
+      <p style="margin-top:24px">The workspace as it sits in Postman — collections grouped by type and environments kept separate (names generalized):</p>
+
+      <div class="collections">
+        <div class="code-head">workspace &middot; Postman</div>
+        <div class="coll-body">
+          <div class="coll-group">Collections</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> (regression)_serviceA_UAT</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> 01.CodeVersion / SystemStatus</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> serviceA_QA</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> serviceB_QA</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> serviceB_UAT</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> serviceC_QA</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> serviceC_UAT</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> serviceD_QA</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> moduleX_QA</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> moduleX_UAT</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> accountConfiguration</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> tokenization &amp; txn_jwtCredential</div>
+          <div class="coll-row"><span class="chev">&rsaquo;</span><span class="ico">&#9723;</span> Tokenize API</div>
+          <div class="coll-sep"></div>
+          <div class="coll-group">Environments</div>
+          <div class="coll-row env"><span class="chev">&rsaquo;</span><span class="ico">&#9670;</span> serviceEndpoint</div>
+          <div class="coll-row env"><span class="chev">&rsaquo;</span><span class="ico">&#9670;</span> env_QA</div>
+          <div class="coll-row env"><span class="chev">&rsaquo;</span><span class="ico">&#9670;</span> env_UAT</div>
+          <div class="coll-row env"><span class="chev">&rsaquo;</span><span class="ico">&#9670;</span> Smoke</div>
+        </div>
+      </div>
+      <p class="code-note">Collection and environment names generalized; structure mirrors the real workspace.</p>
+    </section>
+
+    </div><!-- /col-right -->
+    </div><!-- /body-cols -->
+
+    <div class="note reveal d5">The workspace tells the story: environment-and-lifecycle organization, a read-only reference master, scripted JWT auth and self-incrementing test data, and assertions that check business response codes, not just HTTP 200. The negative-case depth is where the test design earns its keep.</div>
+
+  </div>
+</main>
+
+<footer>Stephanie Haecker · Professional Portfolio</footer>
+
+</body>
+</html>
