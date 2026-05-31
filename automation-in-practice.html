@@ -181,7 +181,7 @@
 
     <div class="eyebrow reveal d1">In Practice · Craft</div>
     <h1 class="title reveal d1">A multi-environment <em>E2E &amp; API</em> automation framework.</h1>
-    <p class="lede reveal d2">A production-grade test automation suite for a payments platform — built with Playwright and TypeScript to run the same tests across four environments and three browser engines, organized by business domain, and wired into CI/CD with secrets handled securely.</p>
+    <p class="lede reveal d2">A production-grade test automation suite for a transactional web platform — built with Playwright and TypeScript to run the same tests across four environments and three browser engines, organized by business domain, and wired into CI/CD with secrets handled securely.</p>
 
     <div class="meta-strip reveal d2">
       <span>Playwright</span>
@@ -210,7 +210,7 @@
       </div>
       <div class="feat">
         <span class="mark">03</span>
-        <p class="txt"><strong>Layered, domain-organized architecture.</strong> Separate suites for each product line and user role (admin, merchant, approver, partner, signup), alongside standalone API suites — broad end-to-end and API coverage mapped to the business.</p>
+        <p class="txt"><strong>Layered, domain-organized architecture.</strong> Separate suites for each product area and user role, alongside standalone API suites — broad end-to-end and API coverage mapped to the business.</p>
       </div>
       <div class="feat">
         <span class="mark">04</span>
@@ -222,7 +222,7 @@
       </div>
       <div class="feat">
         <span class="mark">06</span>
-        <p class="txt"><strong>Compliance-oriented testing.</strong> Coverage includes API key management and PCI-scanning scenarios, not just functional clicks.</p>
+        <p class="txt"><strong>Security &amp; compliance testing.</strong> Coverage includes access-credential management and security-scanning scenarios, not just functional clicks.</p>
       </div>
     </section>
 
@@ -278,10 +278,10 @@
       <div class="skill-group">
         <h3>Domain</h3>
         <div class="tags">
-          <span class="tag">Payments Flows</span>
+          <span class="tag">Multi-Environment</span>
           <span class="tag">MFA / Multi-Role Auth</span>
-          <span class="tag">PCI Scanning</span>
-          <span class="tag">API Key Management</span>
+          <span class="tag">Security Scanning</span>
+          <span class="tag">Credential Management</span>
         </div>
       </div>
     </section>
@@ -296,7 +296,7 @@
 
       <div class="tree-card">
         <div class="code-head">repository structure (generalized)</div>
-        <div class="tree"><span class="row"><span class="dir">payments-automation/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-direct-admin/</span><span class="ann">      ← UI suites, by product line + role</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-direct-merchant/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-admin/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-merchant/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-partners/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-signup/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api/</span><span class="ann">                  ← API suites, validated independently</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api-gateway/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">framework/</span><span class="ann">            ← shared fixtures, helpers, base pages</span></span><span class="row"><span class="branch">│  ├─ </span><span class="file">fixtures.ts</span></span><span class="row"><span class="branch">│  └─ </span><span class="file">base.po.ts</span><span class="ann">         ← page objects extend this base</span></span><span class="row"><span class="branch">├─ </span><span class="dir">.github/</span><span class="ann">              ← GitHub Actions CI/CD pipelines</span></span><span class="row"><span class="branch">├─ </span><span class="file">playwright.config.ts</span><span class="ann">  ← projects: chromium · firefox · webkit</span></span><span class="row"><span class="branch">├─ </span><span class="file">global-teardown.ts</span></span><span class="row"><span class="branch">├─ </span><span class="file">.env.example</span><span class="ann">          ← committed template (no secrets)</span></span><span class="row"><span class="branch">└─ </span><span class="file">.env.{prd,qa,sit,uat}</span><span class="ann"> ← pulled from S3, never committed</span></span></div>
+        <div class="tree"><span class="row"><span class="dir">e2e-automation/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-portal-admin/</span><span class="ann">      ← UI suites, by product area + role</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-portal-user/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-console-admin/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-console-user/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-console-partners/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-console-signup/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api/</span><span class="ann">                  ← API suites, validated independently</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api-console/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">framework/</span><span class="ann">            ← shared fixtures, helpers, base pages</span></span><span class="row"><span class="branch">│  ├─ </span><span class="file">fixtures.ts</span></span><span class="row"><span class="branch">│  └─ </span><span class="file">base.po.ts</span><span class="ann">         ← page objects extend this base</span></span><span class="row"><span class="branch">├─ </span><span class="dir">.github/</span><span class="ann">              ← GitHub Actions CI/CD pipelines</span></span><span class="row"><span class="branch">├─ </span><span class="file">playwright.config.ts</span><span class="ann">  ← projects: chromium · firefox · webkit</span></span><span class="row"><span class="branch">├─ </span><span class="file">global-teardown.ts</span></span><span class="row"><span class="branch">├─ </span><span class="file">.env.example</span><span class="ann">          ← committed template (no secrets)</span></span><span class="row"><span class="branch">└─ </span><span class="file">.env.{prd,qa,sit,uat}</span><span class="ann"> ← pulled from S3, never committed</span></span></div>
       </div>
 
       <div class="legend">
@@ -322,7 +322,7 @@
   <span class="k">constructor</span>(<span class="k">private readonly</span> page: Page) {}
 
   <span class="k">async</span> <span class="f">login</span>(username: <span class="k">string</span>, password: <span class="k">string</span>) {
-    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">goto</span>(process.env.<span class="f">MERCHANT_URL</span>!);
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">goto</span>(process.env.<span class="f">PORTAL_URL</span>!);
     <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Username'</span>).<span class="f">fill</span>(username);
     <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Password'</span>).<span class="f">fill</span>(password);
     <span class="k">await</span> <span class="k">this</span>.page
@@ -333,13 +333,13 @@
       </div>
 
       <div class="code-card" style="margin-top:18px">
-        <div class="code-head">merchant-login.test.ts &middot; spec</div>
+        <div class="code-head">portal-login.test.ts &middot; spec</div>
 <pre><span class="c">// The spec owns the "what" — it reads like a sentence.</span>
-<span class="k">test</span>(<span class="s">'merchant can sign in and reach the dashboard'</span>,
+<span class="k">test</span>(<span class="s">'a user can sign in and reach the dashboard'</span>,
   <span class="k">async</span> ({ page }) =&gt; {
   <span class="k">const</span> login = <span class="k">new</span> <span class="f">LoginPage</span>(page);
   <span class="k">await</span> login.<span class="f">login</span>(
-    users.merchant.name, users.merchant.password);
+    users.standard.name, users.standard.password);
 
   <span class="k">await</span> <span class="f">expect</span>(
     page.<span class="f">getByRole</span>(<span class="s">'heading'</span>, { name: <span class="s">'Dashboard'</span> })
@@ -356,8 +356,8 @@
 
       <figure class="shot">
         <div class="code-head">.env.example &middot; VS Code</div>
-        <img src="assets/env-example-vscode.png" alt="VS Code showing the .env.example template and the project's folder structure, with environment variables documented and no real values committed." loading="lazy">
-        <figcaption>Sensitive paths and identifiers redacted. Variable names are structural placeholders with no values committed.</figcaption>
+        <img src="assets/env-example-vscode.png" alt="VS Code showing a redacted .env.example template alongside the project's folder structure, with environment variable names masked and no real values committed." loading="lazy">
+        <figcaption>Heavily redacted. Domain-specific variable and folder names masked; only structural elements (env tier, browser, framework files) shown. No values committed.</figcaption>
       </figure>
     </section>
 
