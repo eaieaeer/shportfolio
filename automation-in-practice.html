@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -204,34 +205,32 @@
     <!-- ===== CODE SNIPPET ===== -->
     <section class="section reveal d4">
       <div class="section-label">A look at the pattern</div>
-      <p>A representative (generalized) example of the Page Object Model in use — a page object encapsulating an MFA login, and a spec that reads as plain intent:</p>
+      <p>A representative (generalized) example of the Page Object Model in use — a page object that holds the locators and actions for a login screen, and a spec that reads as plain intent:</p>
 
       <div class="code-card">
         <div class="code-head">login.po.ts &middot; page object</div>
-<pre><span class="k">export class</span> <span class="f">LoginPage</span> {
+<pre><span class="c">// The page object owns the "how" — where the fields are</span>
+<span class="c">// and what to click. Tests never touch raw selectors.</span>
+<span class="k">export class</span> <span class="f">LoginPage</span> {
   <span class="k">constructor</span>(<span class="k">private readonly</span> page: Page) {}
 
-  <span class="k">async</span> <span class="f">login</span>(user: TestUser) {
-    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">goto</span>(process.env.<span class="f">ADMIN_URL</span>!);
-    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Username'</span>).<span class="f">fill</span>(user.name);
-    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Password'</span>).<span class="f">fill</span>(user.password);
+  <span class="k">async</span> <span class="f">login</span>(username: <span class="k">string</span>, password: <span class="k">string</span>) {
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">goto</span>(process.env.<span class="f">MERCHANT_URL</span>!);
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Username'</span>).<span class="f">fill</span>(username);
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Password'</span>).<span class="f">fill</span>(password);
     <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByRole</span>(<span class="s">'button'</span>, { name: <span class="s">'Sign in'</span> }).<span class="f">click</span>();
-    <span class="c">// hand off to the MFA step with the account's seeded code</span>
-    <span class="k">await</span> <span class="k">this</span>.<span class="f">completeMfa</span>(user.mfaCode);
   }
 }</pre>
       </div>
 
       <div class="code-card" style="margin-top:18px">
-        <div class="code-head">admin-api-keys.test.ts &middot; spec</div>
-<pre><span class="k">test</span>(<span class="s">'admin can rotate an API key'</span>, <span class="k">async</span> ({ page }) =&gt; {
+        <div class="code-head">merchant-login.test.ts &middot; spec</div>
+<pre><span class="c">// The spec owns the "what" — it reads like a sentence.</span>
+<span class="k">test</span>(<span class="s">'merchant can sign in and reach the dashboard'</span>, <span class="k">async</span> ({ page }) =&gt; {
   <span class="k">const</span> login = <span class="k">new</span> <span class="f">LoginPage</span>(page);
-  <span class="k">await</span> login.<span class="f">login</span>(users.adminMfa1);
+  <span class="k">await</span> login.<span class="f">login</span>(users.merchant.name, users.merchant.password);
 
-  <span class="k">const</span> keys = <span class="k">new</span> <span class="f">ApiKeyPage</span>(page);
-  <span class="k">await</span> keys.<span class="f">rotate</span>(<span class="s">'primary'</span>);
-
-  <span class="k">await</span> <span class="f">expect</span>(keys.statusBanner).<span class="f">toHaveText</span>(<span class="s">/key rotated/i</span>);
+  <span class="k">await</span> <span class="f">expect</span>(page.<span class="f">getByRole</span>(<span class="s">'heading'</span>, { name: <span class="s">'Dashboard'</span> })).<span class="f">toBeVisible</span>();
 });</pre>
       </div>
       <p class="code-note">Illustrative example — locators and credentials are generalized, not from any live environment.</p>
