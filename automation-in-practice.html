@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>In Practice · Stephanie Haecker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1a17;
+    --paper:#f3ede1;
+    --paper-2:#ece3d3;
+    --rust:#9c4221;
+    --rust-bright:#c05621;
+    --teal:#1d4d4a;
+    --gold:#b7791f;
+    --line:#cbbfa8;
+    --mut:#6b6354;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Newsreader',Georgia,serif;
+    font-size:19px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 32px;position:relative;z-index:2;width:100%}
+
+  main{flex:1;padding:80px 0 60px}
+
+  /* ---- BACK LINK ---- */
+  .back{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--rust);text-decoration:none;
+    display:inline-flex;align-items:center;gap:8px;margin-bottom:40px;
+    transition:gap .25s ease;
+  }
+  .back:hover{gap:14px}
+
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--rust);margin-bottom:28px}
+  h1.title{
+    font-family:'Fraunces',serif;font-weight:900;font-size:clamp(36px,6.2vw,64px);
+    line-height:1.0;letter-spacing:-.02em;color:var(--ink);
+  }
+  h1.title em{font-style:italic;color:var(--rust);font-weight:500}
+  .lede{font-size:clamp(17.1px,1.98vw,20.7px);max-width:64ch;margin-top:26px;line-height:1.5;color:var(--ink)}
+
+  /* ---- META STRIP ---- */
+  .meta-strip{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;
+    color:var(--teal);margin-top:22px;display:flex;flex-wrap:wrap;gap:8px 14px;
+  }
+  .meta-strip span:not(:last-child)::after{content:"·";margin-left:14px;color:var(--line)}
+
+  /* ---- SECTION SHARED ---- */
+  .section{margin-top:56px}
+  .section-label{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--rust);margin-bottom:22px;
+    padding-bottom:10px;border-bottom:1px solid var(--line);
+  }
+  .section > p{max-width:68ch;margin-bottom:18px}
+  .section > p:last-child{margin-bottom:0}
+  .section h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:26px;color:var(--ink);
+    margin-bottom:14px;letter-spacing:-.01em;
+  }
+
+  /* ---- FEATURE LIST (numbered, like achievements) ---- */
+  .feat{display:flex;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .feat:last-child{border-bottom:none}
+  .feat .mark{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--rust);min-width:28px;padding-top:6px;letter-spacing:.1em}
+  .feat .txt{font-size:18px;line-height:1.5}
+  .feat .txt strong{font-family:'Fraunces',serif;font-weight:600;color:var(--ink)}
+
+  /* ---- CODE BLOCK ---- */
+  .code-card{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
+  .code-card .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  pre{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.7;
+    padding:18px 16px;overflow-x:auto;color:var(--ink);
+  }
+  pre .k{color:var(--rust)}      /* keyword */
+  pre .s{color:var(--teal)}      /* string */
+  pre .c{color:var(--mut);font-style:italic} /* comment */
+  pre .f{color:var(--gold)}      /* function/identifier */
+  .code-note{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mut);margin-top:10px;letter-spacing:.02em}
+
+  /* ---- SKILLS TAGS ---- */
+  .skill-group{margin-bottom:22px}
+  .skill-group:last-child{margin-bottom:0}
+  .skill-group h3{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--teal);margin-bottom:10px;font-weight:500;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.02em;
+    color:var(--ink);background:var(--paper-2);border:1px solid var(--line);
+    padding:6px 12px;border-radius:2px;
+  }
+
+  /* ---- PULL NOTE ---- */
+  .note{
+    border-left:3px solid var(--rust);padding:14px 20px;margin-top:28px;
+    background:var(--paper-2);font-style:italic;font-size:17px;line-height:1.55;color:var(--ink);
+    max-width:68ch;
+  }
+
+  footer{padding:30px 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+
+  .reveal{opacity:0;transform:translateY(20px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .d1{animation-delay:.05s}
+  .d2{animation-delay:.13s}
+  .d3{animation-delay:.21s}
+  .d4{animation-delay:.29s}
+  .d5{animation-delay:.37s}
+</style>
+</head>
+<body>
+
+<main>
+  <div class="wrap">
+    <a class="back reveal d1" href="index.html">&larr; Back to portfolio</a>
+
+    <div class="eyebrow reveal d1">In Practice · Craft</div>
+    <h1 class="title reveal d1">A multi-environment <em>E2E &amp; API</em> automation framework.</h1>
+    <p class="lede reveal d2">A production-grade test automation suite for a payments platform — built with Playwright and TypeScript to run the same tests across four environments and three browser engines, organized by business domain, and wired into CI/CD with secrets handled securely.</p>
+
+    <div class="meta-strip reveal d2">
+      <span>Playwright</span>
+      <span>TypeScript</span>
+      <span>Page Object Model</span>
+      <span>GitHub Actions</span>
+      <span>AWS S3</span>
+    </div>
+
+    <!-- ===== WHAT IT DOES ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">What it achieves</div>
+      <p>The framework runs one test codebase against multiple deployment environments by swapping a single configuration variable, and across Chromium, Firefox, and WebKit. Test suites are split by business domain and user role rather than dumped into a single directory, so coverage scales cleanly as the platform grows.</p>
+
+      <div class="feat">
+        <span class="mark">01</span>
+        <p class="txt"><strong>Multi-environment by configuration.</strong> The same suite targets production, QA, SIT, and UAT, switched through environment variables rather than duplicated code.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">02</span>
+        <p class="txt"><strong>Multi-browser coverage.</strong> Chromium, Firefox, and WebKit are configured as Playwright projects, so cross-engine behavior is verified in every run.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">03</span>
+        <p class="txt"><strong>Layered, domain-organized architecture.</strong> Separate suites for each product line and user role (admin, merchant, approver, partner, signup), alongside standalone API suites — broad end-to-end and API coverage mapped to the business.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">04</span>
+        <p class="txt"><strong>Page Object Model throughout.</strong> Page objects isolate UI locators and actions from test logic, keeping specs readable and reducing maintenance when the UI changes.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">05</span>
+        <p class="txt"><strong>Realistic authentication.</strong> Multiple multi-factor accounts per role model genuine MFA login flows instead of happy-path shortcuts.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">06</span>
+        <p class="txt"><strong>Compliance-oriented testing.</strong> Coverage includes API key management and PCI-scanning scenarios, not just functional clicks.</p>
+      </div>
+    </section>
+
+    <!-- ===== ENGINEERING PRACTICES ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">Engineering practices</div>
+      <p>Beyond the tests themselves, the framework reflects the operational discipline that keeps automation trustworthy over time.</p>
+
+      <div class="feat">
+        <span class="mark">01</span>
+        <p class="txt"><strong>Secrets stay out of version control.</strong> Real credentials are retrieved from AWS S3 per environment; only a documented template is committed, so the repository never carries live secrets.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">02</span>
+        <p class="txt"><strong>CI/CD integration.</strong> Runs are automated through GitHub Actions, with HTML reports and test artifacts captured for every execution.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">03</span>
+        <p class="txt"><strong>Enforced tooling hygiene.</strong> ESLint and Prettier hold formatting and quality consistent, with global setup and teardown hooks framing the suite.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">04</span>
+        <p class="txt"><strong>Clean version control.</strong> Branch and merge work — including resolving merge conflicts — keeps the suite stable and releasable.</p>
+      </div>
+    </section>
+
+    <!-- ===== CODE SNIPPET ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">A look at the pattern</div>
+      <p>A representative (generalized) example of the Page Object Model in use — a page object encapsulating an MFA login, and a spec that reads as plain intent:</p>
+
+      <div class="code-card">
+        <div class="code-head">login.po.ts &middot; page object</div>
+<pre><span class="k">export class</span> <span class="f">LoginPage</span> {
+  <span class="k">constructor</span>(<span class="k">private readonly</span> page: Page) {}
+
+  <span class="k">async</span> <span class="f">login</span>(user: TestUser) {
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">goto</span>(process.env.<span class="f">ADMIN_URL</span>!);
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Username'</span>).<span class="f">fill</span>(user.name);
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByLabel</span>(<span class="s">'Password'</span>).<span class="f">fill</span>(user.password);
+    <span class="k">await</span> <span class="k">this</span>.page.<span class="f">getByRole</span>(<span class="s">'button'</span>, { name: <span class="s">'Sign in'</span> }).<span class="f">click</span>();
+    <span class="c">// hand off to the MFA step with the account's seeded code</span>
+    <span class="k">await</span> <span class="k">this</span>.<span class="f">completeMfa</span>(user.mfaCode);
+  }
+}</pre>
+      </div>
+
+      <div class="code-card" style="margin-top:18px">
+        <div class="code-head">admin-api-keys.test.ts &middot; spec</div>
+<pre><span class="k">test</span>(<span class="s">'admin can rotate an API key'</span>, <span class="k">async</span> ({ page }) =&gt; {
+  <span class="k">const</span> login = <span class="k">new</span> <span class="f">LoginPage</span>(page);
+  <span class="k">await</span> login.<span class="f">login</span>(users.adminMfa1);
+
+  <span class="k">const</span> keys = <span class="k">new</span> <span class="f">ApiKeyPage</span>(page);
+  <span class="k">await</span> keys.<span class="f">rotate</span>(<span class="s">'primary'</span>);
+
+  <span class="k">await</span> <span class="f">expect</span>(keys.statusBanner).<span class="f">toHaveText</span>(<span class="s">/key rotated/i</span>);
+});</pre>
+      </div>
+      <p class="code-note">Illustrative example — locators and credentials are generalized, not from any live environment.</p>
+    </section>
+
+    <!-- ===== SKILLSET ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">Skillset demonstrated</div>
+
+      <div class="skill-group">
+        <h3>Core</h3>
+        <div class="tags">
+          <span class="tag">TypeScript</span>
+          <span class="tag">Playwright</span>
+          <span class="tag">Page Object Model</span>
+          <span class="tag">Test Design</span>
+          <span class="tag">REST API Testing</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Operational</h3>
+        <div class="tags">
+          <span class="tag">Git / Merge Resolution</span>
+          <span class="tag">GitHub Actions CI/CD</span>
+          <span class="tag">AWS S3 Secrets</span>
+          <span class="tag">ESLint + Prettier</span>
+          <span class="tag">Multi-Environment Config</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Domain</h3>
+        <div class="tags">
+          <span class="tag">Payments Flows</span>
+          <span class="tag">MFA / Multi-Role Auth</span>
+          <span class="tag">PCI Scanning</span>
+          <span class="tag">API Key Management</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="note reveal d5">The framework's structure tells the story: domain-organized suites, page objects separated from specs, secrets externalized, and quality gates enforced in CI. That separation of concerns is what distinguishes maintainable automation from brittle scripts.</div>
+
+  </div>
+</main>
+
+<footer>Stephanie Haecker · Professional Portfolio</footer>
+
+</body>
+</html>
