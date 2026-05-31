@@ -82,6 +82,28 @@
   .feat .txt{font-size:18px;line-height:1.5}
   .feat .txt strong{font-family:'Fraunces',serif;font-weight:600;color:var(--ink)}
 
+  /* ---- ARCHITECTURE TREE ---- */
+  .tree-card{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
+  .tree-card .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  .tree{font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.85;padding:18px 16px;overflow-x:auto;color:var(--ink)}
+  .tree .row{white-space:pre;display:block}
+  .tree .branch{color:var(--line)}
+  .tree .dir{color:var(--rust);font-weight:500}
+  .tree .file{color:var(--ink)}
+  .tree .ann{color:var(--mut);font-style:italic}
+  .tree .layer{color:var(--teal)}
+  /* layer legend */
+  .legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:18px}
+  .legend .item{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink)}
+  .legend .dot{width:10px;height:10px;border-radius:2px;flex:none}
+  .legend .d-e2e{background:var(--rust)}
+  .legend .d-api{background:var(--teal)}
+  .legend .d-fw{background:var(--gold)}
+  .legend .d-cfg{background:var(--mut)}
+
   /* ---- CODE BLOCK ---- */
   .code-card{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
   .code-card .code-head{
@@ -177,6 +199,26 @@
         <span class="mark">06</span>
         <p class="txt"><strong>Compliance-oriented testing.</strong> Coverage includes API key management and PCI-scanning scenarios, not just functional clicks.</p>
       </div>
+    </section>
+
+    <!-- ===== ARCHITECTURE ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">How it's organized</div>
+      <p>The repository is structured by layer and by business domain rather than by file type, so a test for a given product line and role lives where you'd expect it. End-to-end suites, API suites, and shared framework utilities stay cleanly separated.</p>
+
+      <div class="tree-card">
+        <div class="code-head">repository structure (generalized)</div>
+        <div class="tree"><span class="row"><span class="dir">payments-automation/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-direct-admin/</span><span class="ann">      ← UI suites, by product line + role</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-direct-merchant/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-admin/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-merchant/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-partners/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">e2e-gateway-signup/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api/</span><span class="ann">                  ← API suites, validated independently</span></span><span class="row"><span class="branch">├─ </span><span class="dir">api-gateway/</span></span><span class="row"><span class="branch">├─ </span><span class="dir">framework/</span><span class="ann">            ← shared fixtures, helpers, base pages</span></span><span class="row"><span class="branch">│  ├─ </span><span class="file">fixtures.ts</span></span><span class="row"><span class="branch">│  └─ </span><span class="file">base.po.ts</span><span class="ann">         ← page objects extend this base</span></span><span class="row"><span class="branch">├─ </span><span class="dir">.github/</span><span class="ann">              ← GitHub Actions CI/CD pipelines</span></span><span class="row"><span class="branch">├─ </span><span class="file">playwright.config.ts</span><span class="ann">  ← projects: chromium · firefox · webkit</span></span><span class="row"><span class="branch">├─ </span><span class="file">global-teardown.ts</span></span><span class="row"><span class="branch">├─ </span><span class="file">.env.example</span><span class="ann">          ← committed template (no secrets)</span></span><span class="row"><span class="branch">└─ </span><span class="file">.env.{prd,qa,sit,uat}</span><span class="ann"> ← pulled from S3, never committed</span></span></div>
+      </div>
+
+      <div class="legend">
+        <span class="item"><span class="dot d-e2e"></span> End-to-end UI suites</span>
+        <span class="item"><span class="dot d-api"></span> API suites</span>
+        <span class="item"><span class="dot d-fw"></span> Shared framework</span>
+        <span class="item"><span class="dot d-cfg"></span> Config &amp; environment</span>
+      </div>
+
+      <p style="margin-top:18px">Each <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--rust)">e2e-*</span> folder pairs page objects (<span style="font-family:'IBM Plex Mono',monospace;font-size:14px">.po.ts</span>) with their specs (<span style="font-family:'IBM Plex Mono',monospace;font-size:14px">.test.ts</span>), while shared logic lives once in <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--rust)">framework/</span>. Adding a new product line means adding a folder, not untangling existing tests.</p>
     </section>
 
     <!-- ===== ENGINEERING PRACTICES ===== -->
