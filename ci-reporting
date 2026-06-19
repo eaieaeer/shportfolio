@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Always-On Signal · Stephanie Haecker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1a17;
+    --paper:#f3ede1;
+    --paper-2:#ece3d3;
+    --rust:#9c4221;
+    --rust-bright:#c05621;
+    --teal:#1d4d4a;
+    --gold:#b7791f;
+    --line:#cbbfa8;
+    --mut:#6b6354;
+    --pass:#2f7d4f;
+    --fail:#a23b2d;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Newsreader',Georgia,serif;
+    font-size:19px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 32px;position:relative;z-index:2;width:100%}
+
+  main{flex:1;padding:80px 0 60px}
+
+  /* ---- BACK LINK ---- */
+  .back{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--rust);text-decoration:none;
+    display:inline-flex;align-items:center;gap:8px;margin-bottom:40px;
+    transition:gap .25s ease;
+  }
+  .back:hover{gap:14px}
+
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--rust);margin-bottom:28px}
+  h1.title{
+    font-family:'Fraunces',serif;font-weight:900;font-size:clamp(36px,6.2vw,64px);
+    line-height:1.0;letter-spacing:-.02em;color:var(--ink);
+  }
+  h1.title em{font-style:italic;color:var(--rust);font-weight:500}
+  .lede{font-size:clamp(17.1px,1.98vw,20.7px);max-width:64ch;margin-top:26px;line-height:1.5;color:var(--ink)}
+
+  /* ---- META STRIP ---- */
+  .meta-strip{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;
+    color:var(--teal);margin-top:22px;display:flex;flex-wrap:wrap;gap:8px 14px;
+  }
+  .meta-strip span:not(:last-child)::after{content:"·";margin-left:14px;color:var(--line)}
+
+  /* ---- SECTION SHARED ---- */
+  .section{margin-top:56px}
+
+  /* ---- TWO-COLUMN BODY ---- */
+  .body-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 44px;align-items:start;margin-top:0}
+  .body-cols .col{min-width:0}
+  .body-cols .col > .section:first-child{margin-top:56px}
+  @media(max-width:820px){
+    .body-cols{grid-template-columns:1fr;gap:0}
+    .body-cols .col-right > .section:first-child{margin-top:56px}
+  }
+  .section-label{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--rust);margin-bottom:22px;
+    padding-bottom:10px;border-bottom:1px solid var(--line);
+  }
+  .section > p{max-width:68ch;margin-bottom:18px}
+  .section > p:last-child{margin-bottom:0}
+  .section h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:26px;color:var(--ink);
+    margin-bottom:14px;letter-spacing:-.01em;
+  }
+
+  /* ---- FEATURE LIST ---- */
+  .feat{display:flex;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .feat:last-child{border-bottom:none}
+  .feat .mark{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--rust);min-width:28px;padding-top:6px;letter-spacing:.1em}
+  .feat .txt{font-size:18px;line-height:1.5}
+  .feat .txt strong{font-family:'Fraunces',serif;font-weight:600;color:var(--ink)}
+
+  /* ---- PIPELINE FLOW ---- */
+  .flow-card{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
+  .flow-card .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  .flow{padding:20px 16px;display:flex;flex-direction:column;gap:0}
+  .flow-step{display:flex;align-items:flex-start;gap:14px;position:relative;padding-bottom:18px}
+  .flow-step:last-child{padding-bottom:0}
+  .flow-step:not(:last-child)::before{
+    content:"";position:absolute;left:13px;top:26px;bottom:-2px;width:1px;background:var(--line);
+  }
+  .flow-step .node{
+    flex:none;width:27px;height:27px;border-radius:50%;border:1px solid var(--line);
+    background:var(--paper);display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--rust);z-index:1;
+  }
+  .flow-step .step-body{padding-top:2px}
+  .flow-step .step-title{font-family:'Fraunces',serif;font-weight:600;font-size:17px;line-height:1.25}
+  .flow-step .step-sub{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mut);margin-top:3px;letter-spacing:.02em;line-height:1.5}
+
+  /* ---- DASHBOARD MINI-CARDS ---- */
+  .monitor{margin-top:8px;border:1px solid var(--line);border-radius:3px;background:var(--paper-2);overflow:hidden}
+  .monitor .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  .monitor-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line)}
+  .suite{background:var(--paper-2);padding:14px 14px}
+  .suite .suite-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .suite .suite-name{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink);font-weight:500;letter-spacing:.02em}
+  .suite .pill{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;padding:2px 7px;border-radius:2px;background:rgba(47,125,79,.14);color:var(--pass);border:1px solid rgba(47,125,79,.3)}
+  .suite .counts{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mut);margin-bottom:9px;letter-spacing:.02em}
+  .suite .counts b{color:var(--ink);font-weight:500}
+  .bars{display:flex;gap:3px;align-items:flex-end;height:26px}
+  .bars span{flex:1;border-radius:1px;background:var(--pass);opacity:.85}
+  .bars span.f{background:var(--fail)}
+  .bars span.h7{height:60%}.bars span.h8{height:75%}.bars span.h9{height:88%}.bars span.h10{height:100%}
+
+  /* ---- SCREENSHOT FIGURE ---- */
+  .shot{margin-top:8px;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--paper-2)}
+  .shot .code-head{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.02);
+  }
+  .shot img{display:block;width:100%;height:auto}
+  .shot figcaption{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mut);
+    padding:10px 16px;border-top:1px solid var(--line);letter-spacing:.02em;line-height:1.5;
+  }
+
+  /* ---- SKILLS TAGS ---- */
+  .skill-group{margin-bottom:22px}
+  .skill-group:last-child{margin-bottom:0}
+  .skill-group h3{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--teal);margin-bottom:10px;font-weight:500;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.02em;
+    color:var(--ink);background:var(--paper-2);border:1px solid var(--line);
+    padding:6px 12px;border-radius:2px;
+  }
+
+  /* ---- PULL NOTE ---- */
+  .note{
+    border-left:3px solid var(--rust);padding:14px 20px;margin-top:28px;
+    background:var(--paper-2);font-style:italic;font-size:17px;line-height:1.55;color:var(--ink);
+    max-width:68ch;
+  }
+
+  footer{padding:30px 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+
+  .reveal{opacity:0;transform:translateY(20px);animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .d1{animation-delay:.05s}
+  .d2{animation-delay:.13s}
+  .d3{animation-delay:.21s}
+  .d4{animation-delay:.29s}
+  .d5{animation-delay:.37s}
+</style>
+</head>
+<body>
+
+<main>
+  <div class="wrap">
+    <a class="back reveal d1" href="index.html">&larr; Back to portfolio</a>
+
+    <div class="eyebrow reveal d1">Always-On Signal · Visibility</div>
+    <h1 class="title reveal d1">Scheduled regression, <em>reported</em> and published live.</h1>
+    <p class="lede reveal d2">Running tests is only half the job &mdash; the other half is proving they ran and making the result impossible to miss. This is a self-publishing reporting layer: regression suites run on a schedule in GitHub Actions, emit structured test reports as artifacts, and push their results to a live GitHub Pages dashboard that updates after every run.</p>
+
+    <div class="meta-strip reveal d2">
+      <span>GitHub Actions</span>
+      <span>Scheduled Runs</span>
+      <span>Postman / Newman</span>
+      <span>JUnit Reports</span>
+      <span>GitHub Pages</span>
+    </div>
+
+    <!-- ===== TWO-COLUMN BODY ===== -->
+    <div class="body-cols">
+    <div class="col col-left">
+
+    <!-- ===== WHAT IT DOES ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">What it achieves</div>
+      <p>Five regression suites &mdash; one per payment service &mdash; run unattended on a schedule and report into a single shared dashboard. Each suite owns its workflow but writes to a common results store, so the dashboard always reflects the latest state of every service without any suite overwriting another's data.</p>
+
+      <div class="feat">
+        <span class="mark">01</span>
+        <p class="txt"><strong>Scheduled, unattended runs.</strong> Regression workflows fire on a schedule through GitHub Actions &mdash; coverage runs continuously, not only when someone remembers to trigger it.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">02</span>
+        <p class="txt"><strong>Structured test reports.</strong> Each run emits machine-readable JUnit-style results, captured as workflow artifacts with per-suite, per-check pass/fail counts and timings.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">03</span>
+        <p class="txt"><strong>Two-job pipeline.</strong> A <em>run-tests</em> job executes the collection; a downstream <em>publish-dashboard</em> job consumes its results &mdash; clean separation between executing and reporting.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">04</span>
+        <p class="txt"><strong>Self-publishing dashboard.</strong> Results are pushed to GitHub Pages automatically, so the live monitor refreshes itself after each suite finishes &mdash; no manual report assembly.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">05</span>
+        <p class="txt"><strong>Non-destructive shared state.</strong> Each suite updates only its own record in the shared results file, preserving every other suite's data &mdash; five independent workflows, one coherent dashboard.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">06</span>
+        <p class="txt"><strong>History &amp; trend at a glance.</strong> Run history, per-run pass/fail totals, and failed-checks trend bars make a regression turning red visible immediately.</p>
+      </div>
+    </section>
+
+    <!-- ===== ENGINEERING PRACTICES ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">Engineering practices</div>
+      <p>The value isn't a one-off report &mdash; it's a reporting layer that stays trustworthy and maintainable as suites are added or renamed.</p>
+
+      <div class="feat">
+        <span class="mark">01</span>
+        <p class="txt"><strong>Idempotent publish step.</strong> The publish job clones existing results, updates a single suite's record, and pushes &mdash; with retry-on-attempt handling so a transient failure doesn't corrupt the dashboard.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">02</span>
+        <p class="txt"><strong>Grouped, named check counts.</strong> Results are grouped (e.g. ACH, card-present) and totalled per category, so the dashboard reports meaningful sub-totals, not just one opaque number.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">03</span>
+        <p class="txt"><strong>Safe refactors, validated first.</strong> A repository rename was planned and checked against every workflow, config, and Pages reference before committing &mdash; the dashboard kept publishing without interruption.</p>
+      </div>
+      <div class="feat">
+        <span class="mark">04</span>
+        <p class="txt"><strong>Artifacts retained per run.</strong> Each execution stores its raw results artifact, giving an auditable trail behind every number on the dashboard.</p>
+      </div>
+    </section>
+
+    <!-- ===== SKILLSET ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">Skillset demonstrated</div>
+
+      <div class="skill-group">
+        <h3>Core</h3>
+        <div class="tags">
+          <span class="tag">GitHub Actions</span>
+          <span class="tag">CI/CD Pipelines</span>
+          <span class="tag">Scheduled Workflows</span>
+          <span class="tag">Postman / Newman</span>
+          <span class="tag">JUnit Reporting</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Operational</h3>
+        <div class="tags">
+          <span class="tag">GitHub Pages Publishing</span>
+          <span class="tag">Workflow Artifacts</span>
+          <span class="tag">Shared-State Updates</span>
+          <span class="tag">Idempotent Deploys</span>
+          <span class="tag">Safe Repo Refactors</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Outcome</h3>
+        <div class="tags">
+          <span class="tag">Regression Visibility</span>
+          <span class="tag">Trend Monitoring</span>
+          <span class="tag">Release Readiness Signal</span>
+          <span class="tag">Auditable Results</span>
+        </div>
+      </div>
+    </section>
+
+    </div><!-- /col-left -->
+    <div class="col col-right">
+
+    <!-- ===== PIPELINE ===== -->
+    <section class="section reveal d3">
+      <div class="section-label">How a run flows</div>
+      <p>Every scheduled suite walks the same two-stage path &mdash; execute, then publish &mdash; ending at a dashboard that anyone can open without touching GitHub.</p>
+
+      <div class="flow-card">
+        <div class="code-head">scheduled run &middot; one suite</div>
+        <div class="flow">
+          <div class="flow-step">
+            <span class="node">01</span>
+            <div class="step-body">
+              <div class="step-title">Schedule triggers the workflow</div>
+              <div class="step-sub">GitHub Actions cron fires the suite &mdash; no human in the loop</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <span class="node">02</span>
+            <div class="step-body">
+              <div class="step-title">run-tests executes the collection</div>
+              <div class="step-sub">Newman runs the Postman collection against UAT; emits JUnit results</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <span class="node">03</span>
+            <div class="step-body">
+              <div class="step-title">Results saved as an artifact</div>
+              <div class="step-sub">Raw per-check pass/fail + timings retained for the run</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <span class="node">04</span>
+            <div class="step-body">
+              <div class="step-title">publish-dashboard updates shared data</div>
+              <div class="step-sub">Clones gh-pages, updates this suite's record, preserves the others</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <span class="node">05</span>
+            <div class="step-body">
+              <div class="step-title">Pushed live to GitHub Pages</div>
+              <div class="step-sub">The monitor refreshes itself &mdash; latest status, instantly visible</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DASHBOARD PREVIEW ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">The live monitor</div>
+      <p>A generalized view of the published dashboard &mdash; one card per suite, each showing current pass/fail counts and a recent-run trend strip. Green is a clean run; a red bar marks a run where checks failed.</p>
+
+      <div class="monitor">
+        <div class="code-head">regression monitor &middot; all suites passing</div>
+        <div class="monitor-grid">
+          <div class="suite">
+            <div class="suite-top"><span class="suite-name">Service A — API</span><span class="pill">PASS</span></div>
+            <div class="counts"><b>954/954</b> checks &middot; 0 failed</div>
+            <div class="bars"><span class="h8"></span><span class="h9"></span><span class="h7"></span><span class="h10"></span><span class="h9"></span><span class="h8"></span><span class="h10"></span></div>
+          </div>
+          <div class="suite">
+            <div class="suite-top"><span class="suite-name">Service B — Risk</span><span class="pill">PASS</span></div>
+            <div class="counts"><b>243/243</b> checks &middot; 0 failed</div>
+            <div class="bars"><span class="h9"></span><span class="h8"></span><span class="f h10"></span><span class="h9"></span><span class="h7"></span><span class="h10"></span><span class="h9"></span></div>
+          </div>
+          <div class="suite">
+            <div class="suite-top"><span class="suite-name">Service C — Wallet</span><span class="pill">PASS</span></div>
+            <div class="counts"><b>164/164</b> checks &middot; 0 failed</div>
+            <div class="bars"><span class="h7"></span><span class="h9"></span><span class="h8"></span><span class="h10"></span><span class="h9"></span><span class="h8"></span><span class="h9"></span></div>
+          </div>
+          <div class="suite">
+            <div class="suite-top"><span class="suite-name">Service D — Payments</span><span class="pill">PASS</span></div>
+            <div class="counts"><b>1894/1894</b> checks &middot; 0 failed</div>
+            <div class="bars"><span class="h9"></span><span class="h10"></span><span class="h8"></span><span class="h9"></span><span class="h10"></span><span class="h7"></span><span class="h9"></span></div>
+          </div>
+          <div class="suite">
+            <div class="suite-top"><span class="suite-name">Service E — Wallet</span><span class="pill">PASS</span></div>
+            <div class="counts"><b>231/231</b> checks &middot; 0 failed</div>
+            <div class="bars"><span class="h8"></span><span class="h9"></span><span class="h7"></span><span class="h9"></span><span class="h10"></span><span class="h8"></span><span class="h9"></span></div>
+          </div>
+          <div class="suite" style="display:flex;flex-direction:column;justify-content:center">
+            <div class="counts" style="margin:0;font-size:11px;color:var(--mut)">5 suites &middot; updates after each suite&rsquo;s run</div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mut)">Generalized representation &mdash; suite names masked, no live environment data.</p>
+    </section>
+
+    <!-- ===== SCREENSHOT ===== -->
+    <section class="section reveal d4">
+      <div class="section-label">From the actual run</div>
+      <p>The published dashboard and a passing workflow run &mdash; per-suite check counts, run history with pass/fail status, and the failed-checks-per-run trend that flags a regression the moment it turns red.</p>
+
+      <figure class="shot">
+        <div class="code-head">regression monitor &middot; GitHub Pages</div>
+        <img src="assets/regression-dashboard.png" alt="A published regression monitoring dashboard on GitHub Pages showing five payment-service suites, each with total and passed check counts, a run-history table with pass and fail statuses, and a failed-checks-per-run bar chart." loading="lazy">
+        <figcaption>Generalized capture. Service-suite names masked; run history and trend bars reflect structural elements only &mdash; no live transaction data.</figcaption>
+      </figure>
+    </section>
+
+    </div><!-- /col-right -->
+    </div><!-- /body-cols -->
+
+    <div class="note reveal d5">Tests that no one can see don't build confidence. By making every scheduled run publish its own result to a shared, always-current dashboard, regression status stops being something you go dig for and becomes something that's simply there &mdash; green when it's healthy, unmistakably red when it isn't.</div>
+
+  </div>
+</main>
+
+<footer>Stephanie Haecker · Professional Portfolio</footer>
+
+</body>
+</html>
