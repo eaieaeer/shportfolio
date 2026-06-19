@@ -379,15 +379,27 @@
       <p style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mut)">Generalized representation &mdash; suite names masked, no live environment data.</p>
     </section>
 
-    <!-- ===== SCREENSHOT ===== -->
+    <!-- ===== SCREENSHOTS ===== -->
     <section class="section reveal d4">
       <div class="section-label">From the actual run</div>
-      <p>The published dashboard and a passing workflow run &mdash; per-suite check counts, run history with pass/fail status, and the failed-checks-per-run trend that flags a regression the moment it turns red.</p>
+      <p>Captures from the live system &mdash; the workflow step that publishes results, a single suite's run detail, and the published monitor. Suite names are masked; everything structural (counts, run history, trend) is real.</p>
 
       <figure class="shot">
+        <div class="code-head">publish-dashboard &middot; GitHub Actions</div>
+        <img src="assets/dashboard01.jpg" alt="The publish-dashboard job in a GitHub Actions run, showing the steps that check out the repo, download test results, and update this suite's data while preserving the other suites, ending with a published dashboard link." loading="lazy">
+        <figcaption>The automation behind it &mdash; the publish-dashboard job updates one suite's record while preserving the others, then pushes the result live. Repo and suite names masked.</figcaption>
+      </figure>
+
+      <figure class="shot" style="margin-top:18px">
+        <div class="code-head">single suite &middot; run detail</div>
+        <img src="assets/dashboard02.jpg" alt="A single suite's run detail view: total, passed, and failed check counts grouped by category, a failed-checks-per-run bar chart with one red spike among green runs, and a run-history table listing each run with pass or fail status and a link." loading="lazy">
+        <figcaption>Per-suite detail &mdash; grouped check totals, a failed-checks-per-run trend, and run history with pass/fail status and links. Category labels masked.</figcaption>
+      </figure>
+
+      <figure class="shot" style="margin-top:18px">
         <div class="code-head">regression monitor &middot; GitHub Pages</div>
-        <img src="assets/regression-dashboard.png" alt="A published regression monitoring dashboard on GitHub Pages showing five payment-service suites, each with total and passed check counts, a run-history table with pass and fail statuses, and a failed-checks-per-run bar chart." loading="lazy">
-        <figcaption>Generalized capture. Service-suite names masked; run history and trend bars reflect structural elements only &mdash; no live transaction data.</figcaption>
+        <img src="assets/dashboard03.jpg" alt="The published regression monitor on GitHub Pages: five suite cards with names masked, each showing total and passed check counts and a recent-run trend strip. Header reads all five suites passing." loading="lazy">
+        <figcaption>The live monitor &mdash; one card per suite, masked names, current pass/fail counts and a per-run trend strip.</figcaption>
       </figure>
     </section>
 
