@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testing Framework · Showcase</title>
+<style>
+  :root{
+    --bg:#0D1117;
+    --panel:#161B22;
+    --panel2:#1C2230;
+    --line:#2D3340;
+    --text:#E6EDF3;
+    --muted:#8B949E;
+    --green:#3FB950;
+    --blue:#58A6FF;
+    --red:#F85149;
+    --amber:#D29922;
+    --slide-w:1280px;
+    --slide-h:720px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:#05080d;
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:24px;
+    overflow:hidden;
+  }
+
+  /* Stage scales the fixed-size slide to fit the viewport */
+  #stage{
+    position:relative;
+    width:var(--slide-w);
+    height:var(--slide-h);
+    transform-origin:center center;
+  }
+
+  .slide{
+    position:absolute;
+    inset:0;
+    width:var(--slide-w);
+    height:var(--slide-h);
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    padding:64px 72px;
+    display:none;
+    flex-direction:column;
+  }
+  .slide.active{display:flex}
+
+  /* GitHub-style dotted grid background on dark slides */
+  .grid-bg::before{
+    content:"";
+    position:absolute;inset:0;
+    background-image:radial-gradient(rgba(255,255,255,0.04) 1px,transparent 1px);
+    background-size:26px 26px;
+    pointer-events:none;
+  }
+
+  .kicker{
+    color:var(--green);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .kicker .step{color:var(--muted)}
+  h1{font-size:60px;line-height:1.05;font-weight:800;letter-spacing:-0.02em}
+  h2{font-size:40px;line-height:1.1;font-weight:800;letter-spacing:-0.01em}
+  .sub{color:var(--muted);font-size:20px;margin-top:14px;font-weight:400}
+  .lead{font-size:19px;line-height:1.5;color:var(--text);max-width:760px;margin-top:18px;font-weight:400}
+
+  /* Slide 1 stat band */
+  .statband{
+    margin-top:auto;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+  }
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:24px 22px;
+  }
+  .stat .n{font-size:46px;font-weight:800;color:var(--green);line-height:1}
+  .stat .l{color:var(--muted);font-size:14px;margin-top:8px;text-transform:uppercase;letter-spacing:.08em}
+
+  /* Two-column before/after */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:36px;flex:1}
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:28px 30px;
+    display:flex;flex-direction:column;
+  }
+  .card.before{border-color:#3a2a2c}
+  .card.after{border-color:#26412c}
+  .card .tag{
+    font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    margin-bottom:18px;display:inline-flex;align-items:center;gap:8px;
+  }
+  .card.before .tag{color:var(--red)}
+  .card.after .tag{color:var(--green)}
+  .card ul{list-style:none;display:flex;flex-direction:column;gap:16px}
+  .card li{font-size:17px;line-height:1.4;padding-left:26px;position:relative;color:var(--text)}
+  .card.before li::before{content:"✕";position:absolute;left:0;color:var(--red);font-weight:700}
+  .card.after li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+
+  /* Pipeline (slide 3) */
+  .pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px;flex:1;align-content:center}
+  .step-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:26px 22px;
+    position:relative;
+  }
+  .step-card .num{
+    width:38px;height:38px;border-radius:50%;
+    background:rgba(63,185,80,.14);color:var(--green);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:18px;margin-bottom:16px;border:1px solid rgba(63,185,80,.4);
+  }
+  .step-card h3{font-size:19px;font-weight:700;margin-bottom:10px}
+  .step-card p{font-size:14px;line-height:1.45;color:var(--muted)}
+  .step-card:not(:last-child)::after{
+    content:"›";position:absolute;right:-15px;top:50%;transform:translateY(-50%);
+    color:var(--green);font-size:28px;font-weight:700;z-index:2;
+  }
+  .pipe-note{margin-top:28px;color:var(--muted);font-size:15px;font-style:italic;text-align:center}
+
+  /* Generic body grid for content slides */
+  .body{display:grid;grid-template-columns:1.1fr .9fr;gap:34px;margin-top:34px;flex:1}
+  .points{display:flex;flex-direction:column;gap:22px;justify-content:center}
+  .point h3{font-size:20px;font-weight:700;margin-bottom:6px}
+  .point p{font-size:16px;line-height:1.45;color:var(--muted)}
+
+  /* Mono panel (collections / file tree / run output) */
+  .mono{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:22px 24px;
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+    font-size:15px;
+    line-height:1.9;
+    display:flex;flex-direction:column;
+    justify-content:center;
+  }
+  .mono .head{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;font-family:inherit}
+  .mono .row{display:flex;align-items:center;gap:10px;color:var(--text)}
+  .mono .chev{color:var(--muted)}
+  .mono .star{color:var(--amber);margin-left:auto}
+  .mono .dir{color:var(--blue)}
+  .mono .file{color:var(--text)}
+  .mono .desc{color:var(--muted);font-size:13px;padding-left:24px}
+
+  /* Run result block */
+  .run{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;flex-direction:column;justify-content:center}
+  .run .passline{color:var(--green);font-weight:700;font-size:17px;font-family:"SF Mono",ui-monospace,Menlo,monospace;display:flex;align-items:center;gap:10px}
+  .run .meta{color:var(--muted);font-size:13px;margin-top:6px;font-family:"SF Mono",ui-monospace,Menlo,monospace}
+  .run .nums{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:22px;text-align:center}
+  .run .nums .n{font-size:30px;font-weight:800}
+  .run .nums .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+  .run .nums .ok{color:var(--green)}
+  .run .nums .zero{color:var(--muted)}
+
+  /* Dashboard grid (slide 7) */
+  .dash{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px;flex:1;align-content:center}
+  .svc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+  .svc .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .svc .name{font-weight:700;font-size:16px;font-family:"SF Mono",ui-monospace,Menlo,monospace}
+  .svc .badge{font-size:12px;font-weight:800;letter-spacing:.08em;padding:4px 10px;border-radius:20px}
+  .svc .badge.pass{color:var(--green);background:rgba(63,185,80,.14)}
+  .svc .badge.fail{color:var(--red);background:rgba(248,81,73,.14)}
+  .svc .stats{display:flex;justify-content:space-between;align-items:flex-end}
+  .svc .checks .v{font-size:22px;font-weight:800}
+  .svc .checks .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+  .svc.passrow .checks .v{color:var(--green)}
+  .svc.failrow .checks .v{color:var(--amber)}
+  .svc .failed .v{font-size:22px;font-weight:800}
+  .svc .failed.zero .v{color:var(--muted)}
+  .svc .failed.has .v{color:var(--red)}
+  .svc .failed .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;text-align:right}
+
+  /* Benefits 2x2 (slide 8) */
+  .benefits{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:34px;flex:1}
+  .benefit{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px 28px;display:flex;flex-direction:column}
+  .benefit .ico{font-size:28px;width:52px;height:52px;border-radius:12px;background:rgba(63,185,80,.12);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .benefit h3{font-size:19px;font-weight:700;margin-bottom:8px}
+  .benefit p{font-size:15px;line-height:1.5;color:var(--muted)}
+
+  /* Closing slide */
+  .closing{justify-content:center;text-align:left}
+  .closing h2{font-size:48px;max-width:900px}
+  .flow{margin-top:30px;font-size:21px;color:var(--text);font-weight:600;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .flow .arrow{color:var(--green)}
+  .closing .tail{margin-top:28px;color:var(--muted);font-size:18px}
+  .closing .tail b{color:var(--green);font-weight:700}
+
+  .footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;padding-top:24px}
+  .footer .brand{font-weight:700;color:var(--text);letter-spacing:.04em}
+
+  /* Navigation */
+  #nav{
+    margin-top:22px;
+    display:flex;align-items:center;gap:18px;
+    z-index:50;
+  }
+  .navbtn{
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--text);
+    font-size:15px;font-weight:600;
+    padding:10px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    display:flex;align-items:center;gap:8px;
+    transition:border-color .15s,background .15s,transform .05s;
+  }
+  .navbtn:hover:not(:disabled){border-color:var(--green);background:var(--panel2)}
+  .navbtn:active:not(:disabled){transform:translateY(1px)}
+  .navbtn:disabled{opacity:.35;cursor:not-allowed}
+  #counter{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums;min-width:54px;text-align:center}
+  #dots{display:flex;gap:8px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--line);cursor:pointer;transition:background .15s,transform .15s}
+  .dot.active{background:var(--green);transform:scale(1.25)}
+  .hint{position:fixed;bottom:14px;color:var(--muted);font-size:12px;opacity:.7}
+
+  @media (max-width:560px){
+    .hint{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- SLIDE 1 -->
+  <section class="slide active grid-bg">
+    <div class="kicker">Testing Framework</div>
+    <h1>One Workspace,<br>One Source of Truth</h1>
+    <p class="lead">A team-wide automated regression suite for our payment services — built in Postman, version-controlled in GitHub, scheduled in CI, and surfaced on a live health dashboard.</p>
+    <div class="statband">
+      <div class="stat"><div class="n">6</div><div class="l">services covered</div></div>
+      <div class="stat"><div class="n">3,698</div><div class="l">automated checks</div></div>
+      <div class="stat"><div class="n">Daily</div><div class="l">scheduled runs</div></div>
+      <div class="stat"><div class="n">Live</div><div class="l">health dashboard</div></div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 -->
+  <section class="slide">
+    <div class="kicker">Why this exists</div>
+    <h2>Testing shouldn't live on one person's laptop</h2>
+    <div class="cols">
+      <div class="card before">
+        <span class="tag">Before</span>
+        <ul>
+          <li>Regression tests run ad-hoc by one person</li>
+          <li>No shared visibility into what's covered</li>
+          <li>Results live in chat threads &amp; screenshots</li>
+          <li>Hard to know if a service is healthy right now</li>
+        </ul>
+      </div>
+      <div class="card after">
+        <span class="tag">After</span>
+        <ul>
+          <li>Suites organized by service, open to the whole team</li>
+          <li>Same tests run for every new feature update</li>
+          <li>Runs are automated, scheduled, and logged</li>
+          <li>A live dashboard shows health at a glance</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3 -->
+  <section class="slide grid-bg">
+    <div class="kicker">How it fits together</div>
+    <h2>From a test in Postman to a number on the wall</h2>
+    <div class="pipe">
+      <div class="step-card"><div class="num">1</div><h3>Postman Workspace</h3><p>Suites organized by service in a shared team workspace</p></div>
+      <div class="step-card"><div class="num">2</div><h3>GitHub Repo</h3><p>Collections sync to version control as the source of truth</p></div>
+      <div class="step-card"><div class="num">3</div><h3>CI Workflows</h3><p>Each suite runs daily on a schedule — or on demand</p></div>
+      <div class="step-card"><div class="num">4</div><h3>Reports + Dashboard</h3><p>Streamlined run summaries feed a live health view</p></div>
+    </div>
+    <p class="pipe-note">Everything downstream regenerates automatically after every run — no manual collation.</p>
+  </section>
+
+  <!-- SLIDE 4 -->
+  <section class="slide">
+    <div class="kicker"><span class="step">Step 1 ·</span> The Shared Workspace</div>
+    <h2>Collections organized by service</h2>
+    <div class="body">
+      <div class="points">
+        <div class="point"><h3>One collection per service</h3><p>directPayments-API, directRiskService, osiApplePay, osiPaymentsService, paypal/venmo, achGateway-Shim</p></div>
+        <div class="point"><h3>Regression suite lives inside each</h3><p>The same checks I'd run for any new feature update</p></div>
+        <div class="point"><h3>Whole team has access</h3><p>Shared visibility into exactly what's being tested</p></div>
+      </div>
+      <div class="mono">
+        <div class="head">Collections</div>
+        <div class="row"><span class="chev">›</span> directPayments-API <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> directRiskService <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> osiApplePay <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> osiPaymentsService <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> paypal/venmo <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> achGateway-Shim <span class="star">★</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5 -->
+  <section class="slide">
+    <div class="kicker"><span class="step">Step 2 ·</span> Version Control &amp; Process</div>
+    <h2>Establish source of truth</h2>
+    <div class="body">
+      <div class="points">
+        <div class="point"><h3>Postman ↔ GitHub sync</h3><p>Collections are connected to the repo, so any change in Postman flows straight into version control.</p></div>
+        <div class="point"><h3>A workspace guide for the team</h3><p>A shared .md guide documents the PR workflow — how changes move through review before they become the source of truth.</p></div>
+      </div>
+      <div class="mono">
+        <div class="head">⌥ mp_postmanCollections</div>
+        <div class="row"><span class="dir">📁 .github/workflows</span></div>
+        <div class="desc">7 regression_*.yml suites</div>
+        <div class="row"><span class="dir">📁 Postman Collections</span></div>
+        <div class="desc">6 *.postman_collection.json</div>
+        <div class="row"><span class="dir">📁 docs</span></div>
+        <div class="desc">postman-shared-workspace-guide-v1.md</div>
+        <div class="row"><span class="dir">📁 scripts</span></div>
+        <div class="desc">build_report · build_suite_index · update_dashboard</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6 -->
+  <section class="slide">
+    <div class="kicker"><span class="step">Step 3 ·</span> Automation</div>
+    <h2>Every suite runs on a schedule</h2>
+    <div class="body">
+      <div class="points">
+        <div class="point"><h3>⏱ Daily on a schedule</h3><p>Each collection has its own GitHub Actions workflow that runs automatically every day.</p></div>
+        <div class="point"><h3>▶ Or triggered manually</h3><p>Any team member can kick off a run on demand straight from the workflow.</p></div>
+        <div class="point"><h3>✓ Self-documenting runs</h3><p>Each run reports Total / Passed / Failures / Errors / Skipped, with timing.</p></div>
+      </div>
+      <div class="run">
+        <div class="passline">✅ paypalVenmo (both) — PASSED</div>
+        <div class="meta">Run #35 &nbsp;|&nbsp; Time: 50.760s</div>
+        <div class="nums">
+          <div><div class="n">231</div><div class="l">Total</div></div>
+          <div><div class="n ok">231</div><div class="l">Passed</div></div>
+          <div><div class="n zero">0</div><div class="l">Failures</div></div>
+          <div><div class="n zero">0</div><div class="l">Errors</div></div>
+          <div><div class="n zero">0</div><div class="l">Skipped</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7 -->
+  <section class="slide grid-bg">
+    <div class="kicker"><span class="step">Step 4 ·</span> The Payoff</div>
+    <h2>Health at a glance — Regression Monitor</h2>
+    <div class="dash">
+      <div class="svc passrow">
+        <div class="top"><span class="name">achGatewayShim</span><span class="badge pass">PASS</span></div>
+        <div class="stats"><div class="checks"><div class="v">212/212</div><div class="k">Checks</div></div><div class="failed zero"><div class="v">0</div><div class="k">Failed</div></div></div>
+      </div>
+      <div class="svc passrow">
+        <div class="top"><span class="name">directPayments-API</span><span class="badge pass">PASS</span></div>
+        <div class="stats"><div class="checks"><div class="v">954/954</div><div class="k">Checks</div></div><div class="failed zero"><div class="v">0</div><div class="k">Failed</div></div></div>
+      </div>
+      <div class="svc failrow">
+        <div class="top"><span class="name">directRiskService</span><span class="badge fail">FAIL</span></div>
+        <div class="stats"><div class="checks"><div class="v">239/243</div><div class="k">Checks</div></div><div class="failed has"><div class="v">4</div><div class="k">Failed</div></div></div>
+      </div>
+      <div class="svc passrow">
+        <div class="top"><span class="name">osiApplePay</span><span class="badge pass">PASS</span></div>
+        <div class="stats"><div class="checks"><div class="v">164/164</div><div class="k">Checks</div></div><div class="failed zero"><div class="v">0</div><div class="k">Failed</div></div></div>
+      </div>
+      <div class="svc failrow">
+        <div class="top"><span class="name">osiPaymentsService</span><span class="badge fail">FAIL</span></div>
+        <div class="stats"><div class="checks"><div class="v">1893/1894</div><div class="k">Checks</div></div><div class="failed has"><div class="v">1</div><div class="k">Failed</div></div></div>
+      </div>
+      <div class="svc passrow">
+        <div class="top"><span class="name">paypalVenmo</span><span class="badge pass">PASS</span></div>
+        <div class="stats"><div class="checks"><div class="v">231/231</div><div class="k">Checks</div></div><div class="failed zero"><div class="v">0</div><div class="k">Failed</div></div></div>
+      </div>
+    </div>
+    <p class="pipe-note">6 suites · updates after each suite's run</p>
+  </section>
+
+  <!-- SLIDE 8 -->
+  <section class="slide">
+    <div class="kicker">What the team gets</div>
+    <h2>Why this matters</h2>
+    <div class="benefits">
+      <div class="benefit"><div class="ico">👁</div><h3>Shared visibility</h3><p>Anyone can see what's tested and whether each service is healthy right now — no asking around.</p></div>
+      <div class="benefit"><div class="ico">🔁</div><h3>Consistency</h3><p>The same regression suite runs for every feature update, every day — not just when someone remembers.</p></div>
+      <div class="benefit"><div class="ico">🧾</div><h3>Traceability</h3><p>Collections are version-controlled with a documented PR process; every run is logged and archived.</p></div>
+      <div class="benefit"><div class="ico">⚡</div><h3>Early detection</h3><p>A failing check shows up on the dashboard the moment a run completes, before it reaches customers.</p></div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9 -->
+  <section class="slide grid-bg closing">
+    <div class="kicker">The bottom line</div>
+    <h2>Testing is now a shared, automated, always-on system.</h2>
+    <div class="flow">
+      Postman workspace <span class="arrow">→</span> GitHub source of truth <span class="arrow">→</span> scheduled CI runs <span class="arrow">→</span> live health dashboard
+    </div>
+    <p class="tail"><b>Open to the whole team.</b> Runs every day. Visible to everyone.</p>
+    <div class="footer">
+      <span class="brand">TESTING FRAMEWORK</span>
+      <span>One Workspace, One Source of Truth</span>
+    </div>
+  </section>
+
+</div>
+
+<nav id="nav">
+  <button class="navbtn" id="prev">‹ Prev</button>
+  <span id="counter">1 / 9</span>
+  <div id="dots"></div>
+  <button class="navbtn" id="next">Next ›</button>
+</nav>
+
+<div class="hint">Use ← → arrow keys to navigate</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const prev=document.getElementById('prev');
+  const next=document.getElementById('next');
+  const counter=document.getElementById('counter');
+  const dotsWrap=document.getElementById('dots');
+  const stage=document.getElementById('stage');
+  let i=0;
+
+  slides.forEach((_,idx)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(idx===0?' active':'');
+    d.addEventListener('click',()=>go(idx));
+    dotsWrap.appendChild(d);
+  });
+  const dots=[...dotsWrap.children];
+
+  function go(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,idx)=>s.classList.toggle('active',idx===i));
+    dots.forEach((d,idx)=>d.classList.toggle('active',idx===i));
+    counter.textContent=(i+1)+' / '+slides.length;
+    prev.disabled=(i===0);
+    next.disabled=(i===slides.length-1);
+  }
+  prev.addEventListener('click',()=>go(i-1));
+  next.addEventListener('click',()=>go(i+1));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'){go(i+1)}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){go(i-1)}
+    if(e.key==='Home'){go(0)}
+    if(e.key==='End'){go(slides.length-1)}
+  });
+
+  // Scale the fixed 1280x720 stage to fit the viewport
+  function fit(){
+    const navH=document.getElementById('nav').offsetHeight+40;
+    const availW=window.innerWidth-48;
+    const availH=window.innerHeight-navH-48;
+    const scale=Math.min(availW/1280,availH/720,1);
+    stage.style.transform='scale('+scale+')';
+    stage.style.marginBottom=(720*scale-720)+'px';
+  }
+  window.addEventListener('resize',fit);
+  fit();
+  go(0);
+</script>
+</body>
+</html>
