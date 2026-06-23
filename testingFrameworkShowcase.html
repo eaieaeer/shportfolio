@@ -30,8 +30,16 @@
     align-items:center;
     justify-content:center;
     min-height:100vh;
-    padding:24px;
+    padding:24px 24px 16px;
     overflow:hidden;
+  }
+
+  /* Wrapper reserves the SCALED height so the nav always sits below the slide */
+  #stage-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
   }
 
   /* Stage scales the fixed-size slide to fit the viewport */
@@ -40,6 +48,7 @@
     width:var(--slide-w);
     height:var(--slide-h);
     transform-origin:center center;
+    flex:0 0 auto;
   }
 
   .slide{
@@ -237,7 +246,7 @@
   #dots{display:flex;gap:8px}
   .dot{width:9px;height:9px;border-radius:50%;background:var(--line);cursor:pointer;transition:background .15s,transform .15s}
   .dot.active{background:var(--green);transform:scale(1.25)}
-  .hint{position:fixed;bottom:14px;color:var(--muted);font-size:12px;opacity:.7}
+  .hint{margin-top:10px;color:var(--muted);font-size:12px;opacity:.7}
 
   @media (max-width:560px){
     .hint{display:none}
@@ -246,6 +255,7 @@
 </head>
 <body>
 
+<div id="stage-wrap">
 <div id="stage">
 
   <!-- SLIDE 1 -->
@@ -306,18 +316,18 @@
     <h2>Collections organized by service</h2>
     <div class="body">
       <div class="points">
-        <div class="point"><h3>One collection per service</h3><p>directPayments-API, directRiskService, osiApplePay, osiPaymentsService, paypal/venmo, achGateway-Shim</p></div>
+        <div class="point"><h3>One collection per service</h3><p>Service A, Service B, Service C, Service D, Service E, Service F</p></div>
         <div class="point"><h3>Regression suite lives inside each</h3><p>The same checks I'd run for any new feature update</p></div>
         <div class="point"><h3>Whole team has access</h3><p>Shared visibility into exactly what's being tested</p></div>
       </div>
       <div class="mono">
         <div class="head">Collections</div>
-        <div class="row"><span class="chev">›</span> directPayments-API <span class="star">★</span></div>
-        <div class="row"><span class="chev">›</span> directRiskService <span class="star">★</span></div>
-        <div class="row"><span class="chev">›</span> osiApplePay <span class="star">★</span></div>
-        <div class="row"><span class="chev">›</span> osiPaymentsService <span class="star">★</span></div>
-        <div class="row"><span class="chev">›</span> paypal/venmo <span class="star">★</span></div>
-        <div class="row"><span class="chev">›</span> achGateway-Shim <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> Service A <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> Service B <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> Service C <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> Service D <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> Service E <span class="star">★</span></div>
+        <div class="row"><span class="chev">›</span> Service F <span class="star">★</span></div>
       </div>
     </div>
   </section>
@@ -356,7 +366,7 @@
         <div class="point"><h3>✓ Self-documenting runs</h3><p>Each run reports Total / Passed / Failures / Errors / Skipped, with timing.</p></div>
       </div>
       <div class="run">
-        <div class="passline">✅ paypalVenmo (both) — PASSED</div>
+        <div class="passline">✅ Service F — PASSED</div>
         <div class="meta">Run #35 &nbsp;|&nbsp; Time: 50.760s</div>
         <div class="nums">
           <div><div class="n">231</div><div class="l">Total</div></div>
@@ -375,27 +385,27 @@
     <h2>Health at a glance — Regression Monitor</h2>
     <div class="dash">
       <div class="svc passrow">
-        <div class="top"><span class="name">achGatewayShim</span><span class="badge pass">PASS</span></div>
+        <div class="top"><span class="name">Service A</span><span class="badge pass">PASS</span></div>
         <div class="stats"><div class="checks"><div class="v">212/212</div><div class="k">Checks</div></div><div class="failed zero"><div class="v">0</div><div class="k">Failed</div></div></div>
       </div>
       <div class="svc passrow">
-        <div class="top"><span class="name">directPayments-API</span><span class="badge pass">PASS</span></div>
+        <div class="top"><span class="name">Service B</span><span class="badge pass">PASS</span></div>
         <div class="stats"><div class="checks"><div class="v">954/954</div><div class="k">Checks</div></div><div class="failed zero"><div class="v">0</div><div class="k">Failed</div></div></div>
       </div>
       <div class="svc failrow">
-        <div class="top"><span class="name">directRiskService</span><span class="badge fail">FAIL</span></div>
+        <div class="top"><span class="name">Service C</span><span class="badge fail">FAIL</span></div>
         <div class="stats"><div class="checks"><div class="v">239/243</div><div class="k">Checks</div></div><div class="failed has"><div class="v">4</div><div class="k">Failed</div></div></div>
       </div>
       <div class="svc passrow">
-        <div class="top"><span class="name">osiApplePay</span><span class="badge pass">PASS</span></div>
+        <div class="top"><span class="name">Service D</span><span class="badge pass">PASS</span></div>
         <div class="stats"><div class="checks"><div class="v">164/164</div><div class="k">Checks</div></div><div class="failed zero"><div class="v">0</div><div class="k">Failed</div></div></div>
       </div>
       <div class="svc failrow">
-        <div class="top"><span class="name">osiPaymentsService</span><span class="badge fail">FAIL</span></div>
+        <div class="top"><span class="name">Service E</span><span class="badge fail">FAIL</span></div>
         <div class="stats"><div class="checks"><div class="v">1893/1894</div><div class="k">Checks</div></div><div class="failed has"><div class="v">1</div><div class="k">Failed</div></div></div>
       </div>
       <div class="svc passrow">
-        <div class="top"><span class="name">paypalVenmo</span><span class="badge pass">PASS</span></div>
+        <div class="top"><span class="name">Service F</span><span class="badge pass">PASS</span></div>
         <div class="stats"><div class="checks"><div class="v">231/231</div><div class="k">Checks</div></div><div class="failed zero"><div class="v">0</div><div class="k">Failed</div></div></div>
       </div>
     </div>
@@ -428,6 +438,7 @@
     </div>
   </section>
 
+</div>
 </div>
 
 <nav id="nav">
@@ -473,14 +484,20 @@
     if(e.key==='End'){go(slides.length-1)}
   });
 
-  // Scale the fixed 1280x720 stage to fit the viewport
+  // Scale the fixed 1280x720 stage to fit the viewport.
+  // The wrapper is given the SCALED height so it occupies real layout space,
+  // which keeps the nav and hint flowing below the slide (no overlap).
+  const wrap=document.getElementById('stage-wrap');
+  const nav=document.getElementById('nav');
+  const hint=document.querySelector('.hint');
   function fit(){
-    const navH=document.getElementById('nav').offsetHeight+40;
+    const chromeH=nav.offsetHeight + (hint?hint.offsetHeight:0) + 56; // nav + hint + gaps
     const availW=window.innerWidth-48;
-    const availH=window.innerHeight-navH-48;
+    const availH=window.innerHeight-chromeH-40;
     const scale=Math.min(availW/1280,availH/720,1);
     stage.style.transform='scale('+scale+')';
-    stage.style.marginBottom=(720*scale-720)+'px';
+    wrap.style.height=(720*scale)+'px';
+    wrap.style.width=(1280*scale)+'px';
   }
   window.addEventListener('resize',fit);
   fit();
