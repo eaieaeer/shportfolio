@@ -105,6 +105,46 @@
     .connect-grid{grid-template-columns:1fr;gap:0}
   }
 
+  /* ---- FEATURED EXECUTIVE-SUMMARY BLOCK ---- */
+  .featured{
+    display:block;text-decoration:none;color:var(--ink);
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:24px 24px 22px;
+    margin-bottom:34px;
+    position:relative;
+    transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+  }
+  .featured:hover{transform:translateY(-2px);box-shadow:0 10px 30px -18px rgba(28,26,23,.45);border-color:var(--rust)}
+  .featured .feat-eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--rust);margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .featured .feat-eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+  .featured .feat-title{
+    font-family:'Fraunces',serif;font-weight:600;font-size:26px;line-height:1.08;letter-spacing:-.01em;margin-bottom:8px;
+  }
+  .featured .feat-desc{
+    font-family:'Newsreader',Georgia,serif;font-size:16px;line-height:1.5;color:var(--ink);
+    max-width:48ch;margin-bottom:20px;
+  }
+  .featured .feat-stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;
+    padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .featured .stat .n{font-family:'Fraunces',serif;font-weight:600;font-size:23px;line-height:1;color:var(--rust);letter-spacing:-.01em}
+  .featured .stat .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-top:6px}
+  .featured .feat-cta{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--rust);
+    display:flex;align-items:center;gap:8px;text-transform:uppercase;
+  }
+  .featured .feat-cta .arrow{transition:transform .25s ease}
+  .featured:hover .feat-cta .arrow{transform:translateX(5px)}
+  @media(max-width:760px){
+    .featured .feat-stats{grid-template-columns:repeat(2,1fr);gap:16px}
+  }
+
   footer{padding:30px 0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
 
   /* reveal */
@@ -218,6 +258,21 @@
     <!-- ===== RIGHT COLUMN ===== -->
     <div class="col-right">
     <section class="section reveal d5" style="margin-top:0">
+
+      <!-- ===== FEATURED EXECUTIVE SUMMARY ===== -->
+      <a class="featured" href="https://eaieaeer.github.io/shportfolio/testingFrameworkShowcase.html">
+        <div class="feat-eyebrow">Featured &middot; Case Study</div>
+        <div class="feat-title">One Workspace, One Source of Truth</div>
+        <p class="feat-desc">A team-wide automated regression suite for the payment services &mdash; built in Postman, version-controlled in GitHub, scheduled in CI, and surfaced on a live health dashboard.</p>
+        <div class="feat-stats">
+          <div class="stat"><div class="n">6</div><div class="l">services covered</div></div>
+          <div class="stat"><div class="n">3,698</div><div class="l">automated checks</div></div>
+          <div class="stat"><div class="n">Daily</div><div class="l">scheduled runs</div></div>
+          <div class="stat"><div class="n">Live</div><div class="l">health dashboard</div></div>
+        </div>
+        <div class="feat-cta">See the full walkthrough <span class="arrow">&rarr;</span></div>
+      </a>
+
       <div class="section-label">Explore</div>
     <!-- ===== LINKS ===== -->
     <div class="links reveal d5">
